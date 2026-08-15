@@ -1,12 +1,13 @@
-// src/components/ui/KuramaDrivePlyr.tsx
-// Player berbasis Plyr + HLS.js khusus untuk server kuramadrive (stream .mp4 / HLS)
-// Library dimuat via CDN secara dinamis (tidak perlu npm install)
+// Plyr player component. Loads Plyr & HLS.js via CDN dynamically.
+// Receives a proxied video URL and a type hint ('video' | 'hls').
 
 import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 
 interface KuramaDrivePlyrProps {
   videoUrl: string;
+  /** 'video' = MP4 progressive, 'hls' = HLS .m3u8 manifest */
+  streamType?: 'video' | 'hls';
   title?: string;
   poster?: string;
   onEnded?: () => void;
@@ -35,7 +36,7 @@ function injectScript(src: string, id: string): Promise<void> {
     script.id = id;
     script.src = src;
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    script.onerror = () => reject(new Error(`Failed to load: ${src}`));
     document.head.appendChild(script);
   });
 }
@@ -49,36 +50,55 @@ declare global {
   }
 }
 
-export function KuramaDrivePlyr({ videoUrl, title, poster, onEnded }: KuramaDrivePlyrProps) {
+const PLYR_CONFIG = {
+  controls: [
+    'play-large', 'play', 'progress', 'current-time', 'duration',
+    'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen',
+  ],
+  settings: ['speed', 'quality'],
+  speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+  tooltips: { controls: true, seek: true },
+  keyboard: { focused: true, global: false },
+  i18n: {
+    play: 'Putar', pause: 'Jeda', mute: 'Bisukan', unmute: 'Nyalakan suara',
+    settings: 'Pengaturan', fullscreen: 'Layar penuh', exitFullscreen: 'Keluar layar penuh',
+    speed: 'Kecepatan', normal: 'Normal',
+  },
+};
+
+export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster, onEnded }: KuramaDrivePlyrProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<unknown>(null);
   const [libsReady, setLibsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Load CSS + JS dari CDN satu kali
+  // Load CDN scripts once
   useEffect(() => {
     let cancelled = false;
     injectLink(CDN_PLYR_CSS, 'plyr-css');
 
-    Promise.all([
-      injectScript(CDN_HLS_JS, 'hls-js'),
-      injectScript(CDN_PLYR_JS, 'plyr-js'),
-    ])
+    const scripts: Promise<void>[] = [injectScript(CDN_PLYR_JS, 'plyr-js')];
+    // Only load hls.js if actually needed
+    if (streamType === 'hls') {
+      scripts.push(injectScript(CDN_HLS_JS, 'hls-js'));
+    }
+
+    Promise.all(scripts)
       .then(() => { if (!cancelled) setLibsReady(true); })
       .catch((err: Error) => {
         if (!cancelled) { setHasError(true); setErrorMsg(err.message); }
       });
 
     return () => { cancelled = true; };
-  }, []);
+  }, [streamType]);
 
-  // Inisialisasi Plyr + HLS setelah libs siap dan videoRef tersedia
+  // Init Plyr + optional HLS
   useEffect(() => {
     if (!libsReady || !videoRef.current) return;
     const video = videoRef.current;
 
-    // Bersihkan instance sebelumnya
+    // Cleanup previous instance
     if (playerRef.current) {
       try { (playerRef.current as { destroy: () => void }).destroy(); } catch { /* ignore */ }
       playerRef.current = null;
@@ -88,62 +108,29 @@ export function KuramaDrivePlyr({ videoUrl, title, poster, onEnded }: KuramaDriv
     if (!PlyrClass) {
       Promise.resolve().then(() => {
         setHasError(true);
-        setErrorMsg('Plyr gagal dimuat');
+        setErrorMsg('Plyr gagal dimuat.');
       });
       return;
     }
 
-    const isHls = videoUrl.includes('.m3u8');
-
-    if (isHls && window.Hls?.isSupported()) {
-      const hls = new window.Hls({
-        enableWorker: true,
-        lowLatencyMode: false,
-        startLevel: -1,
-      });
+    if (streamType === 'hls' && window.Hls?.isSupported()) {
+      const hls = new window.Hls({ enableWorker: true, lowLatencyMode: false, startLevel: -1 });
       hls.loadSource(videoUrl);
       hls.attachMedia(video);
-
       hls.on(window.Hls.Events.ERROR, (_: unknown, data: { fatal: boolean }) => {
         if (data.fatal) { setHasError(true); setErrorMsg('HLS stream gagal dimuat.'); }
       });
 
-      const plyr = new PlyrClass(video, {
-        controls: [
-          'play-large', 'play', 'progress', 'current-time', 'duration',
-          'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen',
-        ],
-        settings: ['speed', 'quality'],
-        speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-        tooltips: { controls: true, seek: true },
-        keyboard: { focused: true, global: false },
-        i18n: {
-          play: 'Putar',
-          pause: 'Jeda',
-          mute: 'Bisukan',
-          unmute: 'Nyalakan suara',
-          settings: 'Pengaturan',
-          fullscreen: 'Layar penuh',
-          exitFullscreen: 'Keluar layar penuh',
-          speed: 'Kecepatan',
-          normal: 'Normal',
-        },
-      });
-
+      const plyr = new PlyrClass(video, PLYR_CONFIG);
       if (onEnded) plyr.on('ended', onEnded);
       plyr.on('error', () => { setHasError(true); setErrorMsg('Gagal memutar video.'); });
-
       playerRef.current = { destroy: () => { plyr.destroy(); hls.destroy(); } };
     } else {
-      // Native fallback (misal browser safari yg support HLS native)
+      // Direct MP4 or native HLS (Safari)
       video.src = videoUrl;
-      const plyr = new PlyrClass(video, {
-        controls: [
-          'play-large', 'play', 'progress', 'current-time', 'duration',
-          'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen',
-        ],
-      });
+      const plyr = new PlyrClass(video, PLYR_CONFIG);
       if (onEnded) plyr.on('ended', onEnded);
+      plyr.on('error', () => { setHasError(true); setErrorMsg('Gagal memutar video.'); });
       playerRef.current = { destroy: () => { plyr.destroy(); } };
     }
 
@@ -153,7 +140,7 @@ export function KuramaDrivePlyr({ videoUrl, title, poster, onEnded }: KuramaDriv
         playerRef.current = null;
       }
     };
-  }, [libsReady, videoUrl, onEnded]);
+  }, [libsReady, videoUrl, streamType, onEnded]);
 
   if (hasError) {
     return (
