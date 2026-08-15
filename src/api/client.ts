@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://kura-api.misaka.biz.id/api'
+import { API_BASE_URL } from '../utils/env'
 
 export interface ApiErrorDetails {
   status: number
