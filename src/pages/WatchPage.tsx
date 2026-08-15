@@ -19,12 +19,9 @@ export default function WatchPage() {
   const defaultStreamUrl = episodeData?.streamUrl as string | undefined;
   const downloads = (episodeData?.downloads ?? []) as DownloadQuality[];
   
-  // Default server handling:
-  // If 'streamUrl' is present, it means Kuramadrive is available directly without fetching stream endpoint
   const activeServer = selectedServer ?? (defaultStreamUrl ? 'kuramadrive' : servers[0]?.id);
   const isKuramaDrive = activeServer === 'kuramadrive' || activeServer === 'kdrive';
 
-  // Only fetch stream URL if the user selects a DIFFERENT server (not the default streamUrl)
   const shouldFetchStream = Boolean(id && ep && activeServer && !(activeServer === 'kuramadrive' && defaultStreamUrl));
   const { data: streamData, isLoading: isStreamLoading } = useStream(
     id,
@@ -35,7 +32,6 @@ export default function WatchPage() {
 
   const addHistory = useHistoryStore((s) => s.add);
 
-  // Save to history
   useEffect(() => {
     if (anime && episodeData) {
       addHistory({
@@ -52,43 +48,21 @@ export default function WatchPage() {
   if (isEpLoading) return <WatchPageSkeleton />;
   if (error || !episodeData) return <ErrorState message={error?.message ?? 'Gagal memuat episode'} />;
 
-  const episodesList = (anime?.episodes ?? []) as Array<{ episode: number }>;
-  const currentEpNum = Number(ep);
-  const prevEp = episodesList.find((e) => e.episode === currentEpNum - 1);
-  const nextEp = episodesList.find((e) => e.episode === currentEpNum + 1);
+  // Better navigation logic: find by index instead of arithmetic (to support "8.5", "11a", etc.)
+  const rawEpisodes = (anime?.episodes ?? []) as Array<{ episode: string | number; title?: string }>;
+  const sortedEpisodes = [...rawEpisodes].sort((a, b) => Number(a.episode) - Number(b.episode));
+  
+  const currentIndex = sortedEpisodes.findIndex(e => String(e.episode) === String(ep));
+  const prevEp = currentIndex > 0 ? sortedEpisodes[currentIndex - 1] : undefined;
+  const nextEp = currentIndex !== -1 && currentIndex < sortedEpisodes.length - 1 ? sortedEpisodes[currentIndex + 1] : undefined;
 
   const videoUrl = activeServer === 'kuramadrive' && defaultStreamUrl ? defaultStreamUrl : streamData?.videoUrl as string | undefined;
   const iframeUrl = streamData?.iframeUrl as string | undefined;
 
   return (
-    <div className="flex flex-col gap-5 px-4 md:px-8 py-6 max-w-screen-2xl mx-auto pb-16">
-      {/* Episode Navigation Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#121620] p-4 rounded-2xl border border-white/10">
-        <div>
-          {anime && (
-            <Link to={`/anime/${anime.id}/${anime.slug}`} className="text-[#00a3ff] hover:underline font-semibold text-sm">
-              {anime.title}
-            </Link>
-          )}
-          <div className="text-white text-lg font-bold mt-0.5">
-            {episodeData.title || `Episode ${ep}`}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <NavBtn to={prevEp ? `/anime/${id}/episode/${prevEp.episode}` : undefined} label="Episode Sebelumnya">
-            <ChevronLeft className="w-5 h-5" />
-          </NavBtn>
-          <NavBtn to={`/anime/${id}`} label="Daftar Episode">
-            <List className="w-5 h-5" />
-          </NavBtn>
-          <NavBtn to={nextEp ? `/anime/${id}/episode/${nextEp.episode}` : undefined} label="Episode Selanjutnya">
-            <ChevronRight className="w-5 h-5" />
-          </NavBtn>
-        </div>
-      </div>
-
-      {/* Player Container (pembungkus utama) */}
+    <div className="flex flex-col gap-6 px-4 md:px-8 py-6 max-w-screen-2xl mx-auto pb-16">
+      
+      {/* Player Container */}
       <VideoPlayer
         videoUrl={isKuramaDrive ? videoUrl : undefined}
         iframeUrl={!isKuramaDrive ? (iframeUrl ?? videoUrl) : undefined}
@@ -98,58 +72,53 @@ export default function WatchPage() {
         isLoading={isStreamLoading}
       />
 
+      {/* Episode Info & Navigation (Moved below player) */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#111620] p-4 sm:p-5 rounded-2xl border border-[#00a3ff]/10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+        <div>
+          {anime && (
+            <Link to={`/anime/${anime.id}/${anime.slug}`} className="text-[#00a3ff] hover:underline font-semibold text-sm drop-shadow-sm">
+              {anime.title}
+            </Link>
+          )}
+          <h1 className="text-white text-xl sm:text-2xl font-bold mt-1 tracking-tight">
+            {episodeData.title || `Episode ${ep}`}
+          </h1>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <NavBtn to={prevEp ? `/anime/${id}/episode/${prevEp.episode}` : undefined} label="Episode Sebelumnya" icon={<ChevronLeft className="w-5 h-5" />} text="Prev" />
+          <NavBtn to={`/anime/${id}`} label="Daftar Episode" icon={<List className="w-5 h-5" />} />
+          <NavBtn to={nextEp ? `/anime/${id}/episode/${nextEp.episode}` : undefined} label="Episode Selanjutnya" icon={<ChevronRight className="w-5 h-5" />} text="Next" reverse />
+        </div>
+      </div>
+
       {/* Grid Server & Download */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-        {/* Server Selector (Kiri) */}
-        <div className="bg-[#121620] border border-white/10 rounded-2xl p-5 lg:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start mt-2">
+        {/* Server Selector */}
+        <div className="bg-[#111620] border border-white/5 rounded-2xl p-5 lg:col-span-1 shadow-lg">
           <div className="flex items-center gap-2 mb-4">
             <Radio className="w-4 h-4 text-[#00a3ff]" />
-            <h3 className="font-semibold text-slate-200 text-sm">Pilih Server Streaming</h3>
+            <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Pilih Server Streaming</h3>
           </div>
-          {servers.length > 0 ? (
-            <div className="flex flex-col gap-2">
-              {/* Force Kuramadrive to be explicitly selectable if we have streamUrl */}
+          {servers.length > 0 || defaultStreamUrl ? (
+            <div className="flex flex-col gap-2.5">
               {defaultStreamUrl && !servers.some(s => s.id === 'kuramadrive') && (
-                 <button
-                 onClick={() => setSelectedServer('kuramadrive')}
-                 className={`relative px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border ${
-                   activeServer === 'kuramadrive'
-                     ? 'bg-[#00a3ff]/10 border-[#00a3ff]/40 text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
-                     : 'bg-[#0b0e14] border-white/10 text-slate-400 hover:text-slate-200 hover:bg-[#1a1f2e] hover:border-white/15'
-                 }`}
-               >
-                 {activeServer === 'kuramadrive' && (
-                   <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00a3ff] opacity-60" />
-                     <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#00a3ff]" />
-                   </span>
-                 )}
-                 Kuramadrive (Default)
-               </button>
+                 <ServerBtn 
+                   isActive={activeServer === 'kuramadrive'} 
+                   onClick={() => setSelectedServer('kuramadrive')}
+                   label="Kuramadrive (Default)"
+                 />
               )}
-
               {servers.map((server) => {
                 const serverId = server.id ?? '';
                 const serverLabel = server.label ?? server.name ?? serverId;
-                const isCurrent = activeServer === serverId;
                 return (
-                  <button
+                  <ServerBtn 
                     key={serverId}
+                    isActive={activeServer === serverId}
                     onClick={() => setSelectedServer(serverId)}
-                    className={`relative px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border ${
-                      isCurrent
-                        ? 'bg-[#00a3ff]/10 border-[#00a3ff]/40 text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
-                        : 'bg-[#0b0e14] border-white/10 text-slate-400 hover:text-slate-200 hover:bg-[#1a1f2e] hover:border-white/15'
-                    }`}
-                  >
-                    {isCurrent && (
-                      <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00a3ff] opacity-60" />
-                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#00a3ff]" />
-                      </span>
-                    )}
-                    {serverLabel}
-                  </button>
+                    label={serverLabel}
+                  />
                 );
               })}
             </div>
@@ -158,32 +127,32 @@ export default function WatchPage() {
           )}
         </div>
 
-        {/* Download Section (Kanan) */}
-        <div className="bg-[#121620] border border-white/10 rounded-2xl p-5 lg:col-span-2">
-          <div className="flex items-center gap-2 mb-4 pb-4 border-b border-white/5">
-            <Download className="w-4 h-4 text-[#38bdf8]" />
-            <h3 className="font-semibold text-slate-200 text-sm">Download Episode</h3>
+        {/* Download Section */}
+        <div className="bg-[#111620] border border-white/5 rounded-2xl p-5 lg:col-span-2 shadow-lg">
+          <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/5">
+            <Download className="w-4 h-4 text-[#00a3ff]" />
+            <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Download Episode {ep}</h3>
           </div>
           
           {downloads.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {downloads.map((dl, i) => (
-                <div key={i} className="bg-[#0b0e14] border border-white/5 rounded-xl p-3">
-                  <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/5">
-                    <span className="font-semibold text-[#00a3ff] text-xs uppercase tracking-wider">{dl.quality}</span>
-                    <span className="text-xs text-slate-500 font-medium">{dl.size}</span>
+                <div key={i} className="bg-[#0b0e14] border border-white/[0.04] rounded-xl p-3.5 hover:border-white/10 transition-colors">
+                  <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-white/[0.04]">
+                    <span className="font-bold text-[#00a3ff] text-xs uppercase tracking-widest">{dl.quality}</span>
+                    <span className="text-xs text-slate-500 font-medium px-2 py-0.5 bg-white/5 rounded-md">{dl.size}</span>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mt-3">
                     {dl.links.map((link, idx) => (
                       <a
                         key={idx}
                         href={link.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a1f2e] hover:bg-[#00a3ff] text-slate-300 hover:text-white transition-colors text-xs font-medium border border-white/5 hover:border-transparent group"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a1f2e] hover:bg-[#00a3ff] text-slate-300 hover:text-white transition-all text-xs font-semibold border border-white/5 hover:border-transparent group shadow-sm"
                       >
                         {link.name}
-                        <ExternalLink className="w-3 h-3 opacity-50 group-hover:opacity-100" />
+                        <ExternalLink className="w-3 h-3 opacity-40 group-hover:opacity-100 transition-opacity" />
                       </a>
                     ))}
                   </div>
@@ -191,31 +160,82 @@ export default function WatchPage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-6 text-center">
-              <Download className="w-8 h-8 text-slate-700 mb-2" />
-              <p className="text-slate-500 text-sm">Link download belum tersedia untuk episode ini.</p>
+            <div className="flex flex-col items-center justify-center py-8 text-center bg-[#0b0e14]/50 rounded-xl border border-white/[0.02]">
+              <Download className="w-8 h-8 text-slate-700 mb-3" />
+              <p className="text-slate-400 text-sm font-medium">Link download belum tersedia untuk episode ini.</p>
             </div>
           )}
         </div>
       </div>
+      
+      {/* Modern Episode List at Bottom */}
+      {sortedEpisodes.length > 0 && (
+        <div className="mt-4 bg-[#111620] border border-white/5 rounded-2xl p-5 shadow-lg">
+          <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/5">
+            <List className="w-4 h-4 text-[#00a3ff]" />
+            <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Semua Episode</h3>
+            <span className="ml-auto text-xs font-medium text-slate-500 bg-white/5 px-2 py-0.5 rounded-md">{sortedEpisodes.length} Episode</span>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
+            {sortedEpisodes.map((episodeItem) => {
+              const isCurrent = String(episodeItem.episode) === String(ep);
+              return (
+                <Link
+                  key={episodeItem.episode}
+                  to={`/anime/${id}/episode/${episodeItem.episode}`}
+                  className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl transition-all border ${
+                    isCurrent 
+                      ? 'bg-[#00a3ff]/15 border-[#00a3ff]/50 text-[#00a3ff] shadow-[0_0_12px_rgba(0,163,255,0.1)] pointer-events-none' 
+                      : 'bg-[#0b0e14] border-white/[0.04] text-slate-400 hover:bg-[#1a1f2e] hover:border-white/10 hover:text-slate-200'
+                  }`}
+                >
+                  <span className="text-xs font-bold tracking-wider uppercase mb-0.5 opacity-60">Ep</span>
+                  <span className="text-lg font-bold">{episodeItem.episode}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function NavBtn({ to, label, children }: { to?: string; label: string; children: React.ReactNode }) {
+function ServerBtn({ isActive, onClick, label }: { isActive: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border overflow-hidden group ${
+        isActive
+          ? 'bg-gradient-to-r from-[#00a3ff]/15 to-transparent border-[#00a3ff]/40 text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
+          : 'bg-[#0b0e14] border-white/5 text-slate-400 hover:text-slate-200 hover:bg-[#1a1f2e] hover:border-white/10'
+      }`}
+    >
+      {isActive && (
+        <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#00a3ff] shadow-[0_0_8px_rgba(0,163,255,0.8)]" />
+      )}
+      <span className={isActive ? 'pl-1' : ''}>{label}</span>
+    </button>
+  );
+}
+
+function NavBtn({ to, label, icon, text, reverse }: { to?: string; label: string; icon: React.ReactNode; text?: string; reverse?: boolean }) {
   const disabled = !to;
   return (
     <Link
       to={to ?? '#'}
       aria-disabled={disabled}
-      className={`p-2 rounded-xl border transition-colors ${
+      className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border transition-all ${
         disabled
-          ? 'border-white/5 bg-[#0b0e14] text-slate-600 pointer-events-none'
-          : 'border-white/10 bg-[#0b0e14] hover:bg-[#1e2635] text-white'
+          ? 'border-white/5 bg-[#0b0e14]/50 text-slate-600 pointer-events-none'
+          : 'border-white/10 bg-[#0b0e14] hover:bg-[#1a1f2e] hover:border-white/20 text-slate-200 shadow-sm'
       }`}
       title={label}
     >
-      {children}
+      {reverse && text && <span className="hidden sm:block text-xs font-bold uppercase tracking-wider">{text}</span>}
+      {icon}
+      {!reverse && text && <span className="hidden sm:block text-xs font-bold uppercase tracking-wider">{text}</span>}
     </Link>
   );
 }

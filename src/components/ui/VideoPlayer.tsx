@@ -51,14 +51,27 @@ export function VideoPlayer({
       className={`relative overflow-hidden rounded-2xl bg-[#090b10] shadow-[0_28px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/10 ${className}`}
       aria-label={title ? `Pemutar video: ${title}` : 'Pemutar video'}
     >
-      <div className="flex min-h-11 items-center justify-between border-b border-white/[0.07] bg-[#111620] px-4">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span className="h-2 w-2 shrink-0 rounded-full bg-[#00a3ff] shadow-[0_0_12px_rgba(0,163,255,0.7)]" />
-          <p className="truncate text-xs font-medium text-slate-300">{title ?? 'Kuranime Player'}</p>
+      {/* Minimal Modern Browser-like Top Bar */}
+      <div className="relative flex min-h-10 items-center justify-between border-b border-white/[0.05] bg-gradient-to-r from-[#0d1117] via-[#111620] to-[#0d1117] px-4">
+        <div className="flex items-center gap-1.5 flex-shrink-0" aria-hidden="true">
+          <span className="h-2 w-2 rounded-full bg-[#00a3ff]/80 shadow-[0_0_6px_rgba(0,163,255,0.5)]" />
+          <span className="h-2 w-2 rounded-full bg-[#00a3ff]/40" />
+          <span className="h-2 w-2 rounded-full bg-[#00a3ff]/20" />
         </div>
-        <span className="ml-3 shrink-0 rounded-full bg-white/[0.05] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-          {isKuramaDrive ? (proxiedSource?.type === 'hls' ? 'Plyr · HLS' : 'Plyr · MP4') : 'Embed'}
-        </span>
+        
+        <p className="absolute left-1/2 -translate-x-1/2 max-w-[55%] truncate text-[11px] font-medium text-slate-400 tracking-wide">
+          {title ?? 'Kuranime Player'}
+        </p>
+        
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00a3ff] opacity-60" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#00a3ff]" />
+          </span>
+          <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">
+            {isKuramaDrive ? (proxiedSource?.type === 'hls' ? 'HLS' : 'MP4') : 'Embed'}
+          </span>
+        </div>
       </div>
 
       <div className="relative w-full bg-black aspect-video overflow-hidden">
@@ -109,15 +122,15 @@ export function VideoPlayer({
         ) : null}
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-white/[0.07] bg-[#111620] px-4 py-2.5">
-        <p className="text-[11px] text-slate-500">
+      <div className="flex items-center justify-between gap-3 border-t border-white/[0.05] bg-[#0d1117] px-4 py-2">
+        <p className="text-[10px] font-medium text-slate-600 tracking-wide">
           {isKuramaDrive
             ? proxiedSource?.type === 'hls'
-              ? 'Akselerasi HLS via ZenProxy & hls.js'
-              : 'Streaming video via ZenProxy & Plyr'
-            : 'Kontrol video mengikuti provider aktif'}
+              ? 'Secure HLS stream via ZenProxy'
+              : 'Secure video stream via ZenProxy'
+            : 'External provider embed'}
         </p>
-        <p className="shrink-0 text-[11px] font-medium text-[#00a3ff]">Kuranime</p>
+        <p className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-[#00a3ff]/70">Kuranime</p>
       </div>
     </section>
   );
