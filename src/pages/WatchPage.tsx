@@ -134,17 +134,17 @@ export default function WatchPage() {
       </div>
 
       {/* Bottom Grid: All Episodes & Downloads */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start mt-2">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start mt-2">
         
-        {/* Left/Main: Download Section (Span 2) */}
-        <div className="bg-[#111620] border border-white/5 rounded-2xl p-5 lg:col-span-2 shadow-lg">
+        {/* Left/Main: Download Section (Span 3 to align with Player) */}
+        <div className="bg-[#111620] border border-white/5 rounded-2xl p-5 lg:col-span-3 shadow-lg">
           <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/5">
             <Download className="w-4 h-4 text-[#00a3ff]" />
             <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Download Episode {ep}</h3>
           </div>
           
           {downloads.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {downloads.map((dl, i) => (
                 <div key={i} className="bg-[#0b0e14] border border-white/[0.04] rounded-xl p-3.5 hover:border-white/10 transition-colors">
                   <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-white/[0.04]">

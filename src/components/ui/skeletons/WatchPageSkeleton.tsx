@@ -18,11 +18,12 @@ export const WatchPageSkeleton = () => {
         </div>
       </div>
 
-      {/* Bottom Grid: Download + All Episodes */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-3 bg-[#111827] p-5 rounded-2xl ring-1 ring-white/[0.04]">
+      {/* Bottom Grid: Download (col-span-3) + All Episodes (col-span-1) */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3 space-y-3 bg-[#111827] p-5 rounded-2xl ring-1 ring-white/[0.04]">
           <div className="h-5 w-32 bg-slate-800/60 rounded-lg" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
+            <div className="h-28 bg-slate-800/40 rounded-xl" />
             <div className="h-28 bg-slate-800/40 rounded-xl" />
             <div className="h-28 bg-slate-800/40 rounded-xl" />
           </div>
