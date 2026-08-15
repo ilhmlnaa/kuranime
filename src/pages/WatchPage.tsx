@@ -62,46 +62,49 @@ export default function WatchPage() {
   return (
     <div className="flex flex-col gap-6 px-4 md:px-8 py-6 max-w-screen-2xl mx-auto pb-16">
       
-      {/* Player Container */}
-      <VideoPlayer
-        videoUrl={isKuramaDrive ? videoUrl : undefined}
-        iframeUrl={!isKuramaDrive ? (iframeUrl ?? videoUrl) : undefined}
-        title={anime ? `${anime.title} · Episode ${ep}` : `Episode ${ep}`}
-        poster={anime?.cover as string | undefined}
-        activeServerId={activeServer}
-        isLoading={isStreamLoading}
-      />
+      {/* Top Grid: Player (Left) + Server Selection (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+        
+        {/* Left Column: Player & Info */}
+        <div className="lg:col-span-3 flex flex-col gap-4">
+          <VideoPlayer
+            videoUrl={isKuramaDrive ? videoUrl : undefined}
+            iframeUrl={!isKuramaDrive ? (iframeUrl ?? videoUrl) : undefined}
+            title={anime ? `${anime.title} · Episode ${ep}` : `Episode ${ep}`}
+            poster={anime?.cover as string | undefined}
+            activeServerId={activeServer}
+            isLoading={isStreamLoading}
+          />
 
-      {/* Episode Info & Navigation (Moved below player) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#111620] p-4 sm:p-5 rounded-2xl border border-[#00a3ff]/10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
-        <div>
-          {anime && (
-            <Link to={`/anime/${anime.id}/${anime.slug}`} className="text-[#00a3ff] hover:underline font-semibold text-sm drop-shadow-sm">
-              {anime.title}
-            </Link>
-          )}
-          <h1 className="text-white text-xl sm:text-2xl font-bold mt-1 tracking-tight">
-            {episodeData.title || `Episode ${ep}`}
-          </h1>
+          {/* Episode Info & Navigation */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#111620] p-4 sm:p-5 rounded-2xl border border-[#00a3ff]/10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
+            <div>
+              {anime && (
+                <Link to={`/anime/${anime.id}/${anime.slug}`} className="text-[#00a3ff] hover:underline font-semibold text-sm drop-shadow-sm">
+                  {anime.title}
+                </Link>
+              )}
+              <h1 className="text-white text-xl sm:text-2xl font-bold mt-1 tracking-tight">
+                {episodeData.title || `Episode ${ep}`}
+              </h1>
+            </div>
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <NavBtn to={prevEp ? `/anime/${id}/episode/${prevEp.episode}` : undefined} label="Episode Sebelumnya" icon={<ChevronLeft className="w-5 h-5" />} text="Prev" />
+              <NavBtn to={`/anime/${id}`} label="Daftar Episode" icon={<List className="w-5 h-5" />} />
+              <NavBtn to={nextEp ? `/anime/${id}/episode/${nextEp.episode}` : undefined} label="Episode Selanjutnya" icon={<ChevronRight className="w-5 h-5" />} text="Next" reverse />
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <NavBtn to={prevEp ? `/anime/${id}/episode/${prevEp.episode}` : undefined} label="Episode Sebelumnya" icon={<ChevronLeft className="w-5 h-5" />} text="Prev" />
-          <NavBtn to={`/anime/${id}`} label="Daftar Episode" icon={<List className="w-5 h-5" />} />
-          <NavBtn to={nextEp ? `/anime/${id}/episode/${nextEp.episode}` : undefined} label="Episode Selanjutnya" icon={<ChevronRight className="w-5 h-5" />} text="Next" reverse />
-        </div>
-      </div>
-
-      {/* Grid Server & Download */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start mt-2">
-        {/* Server Selector */}
-        <div className="bg-[#111620] border border-white/5 rounded-2xl p-5 lg:col-span-1 shadow-lg">
-          <div className="flex items-center gap-2 mb-4">
+        {/* Right Column: Server Selector */}
+        <div className="lg:col-span-1 bg-[#111620] border border-white/5 rounded-2xl p-5 shadow-lg sticky top-24">
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/5">
             <Radio className="w-4 h-4 text-[#00a3ff]" />
-            <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Pilih Server Streaming</h3>
+            <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Server Streaming</h3>
           </div>
           {servers.length > 0 || defaultStreamUrl ? (
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2.5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               {defaultStreamUrl && !servers.some(s => s.id === 'kuramadrive') && (
                  <ServerBtn 
                    isActive={activeServer === 'kuramadrive'} 
@@ -123,11 +126,17 @@ export default function WatchPage() {
               })}
             </div>
           ) : (
-            <p className="text-slate-500 text-sm">Tidak ada server alternatif.</p>
+            <div className="py-8 text-center text-slate-500 text-sm bg-black/20 rounded-xl border border-white/5">
+              Tidak ada server alternatif.
+            </div>
           )}
         </div>
+      </div>
 
-        {/* Download Section */}
+      {/* Bottom Grid: All Episodes & Downloads */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start mt-2">
+        
+        {/* Left/Main: Download Section (Span 2) */}
         <div className="bg-[#111620] border border-white/5 rounded-2xl p-5 lg:col-span-2 shadow-lg">
           <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/5">
             <Download className="w-4 h-4 text-[#00a3ff]" />
@@ -135,7 +144,7 @@ export default function WatchPage() {
           </div>
           
           {downloads.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {downloads.map((dl, i) => (
                 <div key={i} className="bg-[#0b0e14] border border-white/[0.04] rounded-xl p-3.5 hover:border-white/10 transition-colors">
                   <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-white/[0.04]">
@@ -166,38 +175,37 @@ export default function WatchPage() {
             </div>
           )}
         </div>
+        
+        {/* Right: All Episodes List (Span 1) */}
+        {sortedEpisodes.length > 0 && (
+          <div className="bg-[#111620] border border-white/5 rounded-2xl p-5 shadow-lg lg:col-span-1">
+            <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/5">
+              <List className="w-4 h-4 text-[#00a3ff]" />
+              <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Semua Episode</h3>
+              <span className="ml-auto text-xs font-medium text-slate-500 bg-white/5 px-2 py-0.5 rounded-md">{sortedEpisodes.length} Ep</span>
+            </div>
+            
+            <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+              {sortedEpisodes.map((episodeItem) => {
+                const isCurrent = String(episodeItem.episode) === String(ep);
+                return (
+                  <Link
+                    key={episodeItem.episode}
+                    to={`/anime/${id}/episode/${episodeItem.episode}`}
+                    className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all border ${
+                      isCurrent 
+                        ? 'bg-[#00a3ff]/15 border-[#00a3ff]/50 text-[#00a3ff] shadow-[0_0_12px_rgba(0,163,255,0.1)] pointer-events-none' 
+                        : 'bg-[#0b0e14] border-white/[0.04] text-slate-400 hover:bg-[#1a1f2e] hover:border-white/10 hover:text-slate-200'
+                    }`}
+                  >
+                    <span className="text-base font-bold">{episodeItem.episode}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
-      
-      {/* Modern Episode List at Bottom */}
-      {sortedEpisodes.length > 0 && (
-        <div className="mt-4 bg-[#111620] border border-white/5 rounded-2xl p-5 shadow-lg">
-          <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/5">
-            <List className="w-4 h-4 text-[#00a3ff]" />
-            <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Semua Episode</h3>
-            <span className="ml-auto text-xs font-medium text-slate-500 bg-white/5 px-2 py-0.5 rounded-md">{sortedEpisodes.length} Episode</span>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
-            {sortedEpisodes.map((episodeItem) => {
-              const isCurrent = String(episodeItem.episode) === String(ep);
-              return (
-                <Link
-                  key={episodeItem.episode}
-                  to={`/anime/${id}/episode/${episodeItem.episode}`}
-                  className={`flex flex-col items-center justify-center py-3 px-2 rounded-xl transition-all border ${
-                    isCurrent 
-                      ? 'bg-[#00a3ff]/15 border-[#00a3ff]/50 text-[#00a3ff] shadow-[0_0_12px_rgba(0,163,255,0.1)] pointer-events-none' 
-                      : 'bg-[#0b0e14] border-white/[0.04] text-slate-400 hover:bg-[#1a1f2e] hover:border-white/10 hover:text-slate-200'
-                  }`}
-                >
-                  <span className="text-xs font-bold tracking-wider uppercase mb-0.5 opacity-60">Ep</span>
-                  <span className="text-lg font-bold">{episodeItem.episode}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
