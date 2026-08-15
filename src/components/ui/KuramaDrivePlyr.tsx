@@ -93,7 +93,7 @@ export function KuramaDrivePlyr({ videoUrl, title, poster, onEnded }: KuramaDriv
       return;
     }
 
-    const isHls = videoUrl.includes('.m3u8') || videoUrl.includes('kuramadrive') || videoUrl.includes('asuna.my.id');
+    const isHls = videoUrl.includes('.m3u8');
 
     if (isHls && window.Hls?.isSupported()) {
       const hls = new window.Hls({

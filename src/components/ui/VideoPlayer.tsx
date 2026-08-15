@@ -25,7 +25,8 @@ export function VideoPlayer({
 }: VideoPlayerProps) {
   const [loadedIframeUrl, setLoadedIframeUrl] = useState<string>();
   const iframeLoaded = Boolean(iframeUrl && loadedIframeUrl === iframeUrl);
-  const isKuramaDrive = activeServerId === 'kuramadrive';
+  const isKuramaDrive = activeServerId === 'kuramadrive' || activeServerId === 'kdrive';
+  const isHlsUrl = videoUrl?.includes('.m3u8') ?? false;
 
   useEffect(() => {
     if (!iframeUrl) return;
@@ -49,7 +50,7 @@ export function VideoPlayer({
           <p className="truncate text-xs font-medium text-slate-300">{title ?? 'Kuranime Player'}</p>
         </div>
         <span className="ml-3 shrink-0 rounded-full bg-white/[0.05] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
-          {isKuramaDrive ? 'Plyr · HLS' : 'Embed'}
+          {isKuramaDrive ? (isHlsUrl ? 'Plyr · HLS' : 'Plyr · MP4') : 'Embed'}
         </span>
       </div>
 
@@ -92,7 +93,7 @@ export function VideoPlayer({
 
       <div className="flex items-center justify-between gap-3 border-t border-white/[0.07] bg-[#111620] px-4 py-2.5">
         <p className="text-[11px] text-slate-500">
-          {isKuramaDrive ? 'Akselerasi HLS aktif melalui hls.js' : 'Kontrol video mengikuti provider aktif'}
+          {isKuramaDrive ? (isHlsUrl ? 'Akselerasi HLS aktif melalui hls.js' : 'Pemutaran MP4 progresif melalui Plyr') : 'Kontrol video mengikuti provider aktif'}
         </p>
         <p className="shrink-0 text-[11px] font-medium text-[#00a3ff]">Kuranime</p>
       </div>
