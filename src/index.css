@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-dark: #070a10;
+    --surface-dark: #0d1117;
+    --surface-card: #111827;
+    --surface-card-hover: #1a2332;
+    --primary: #00a3ff;
+    --primary-dim: rgba(0, 163, 255, 0.12);
+    --primary-glow: rgba(0, 163, 255, 0.35);
+    --text-main: #e8edf5;
+    --text-muted: #7b8ca8;
+    --border-color: rgba(0, 163, 255, 0.08);
+  }
+
+  body {
+    background-color: var(--bg-dark);
+    background-image:
+      radial-gradient(ellipse 120% 60% at 50% -10%, rgba(0, 100, 200, 0.07) 0%, transparent 60%);
+    background-attachment: fixed;
+    color: var(--text-main);
+    font-family: 'Lexend', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #070a10;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 163, 255, 0.18);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 163, 255, 0.45);
+}
+
+/* Card with blue-tinted glow */
+.card-glow {
+  box-shadow: 0 0 0 1px rgba(0, 163, 255, 0.06), 0 8px 32px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 0.2s ease;
+}
+.card-glow:hover {
+  box-shadow: 0 0 0 1px rgba(0, 163, 255, 0.18), 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* Surface with subtle blue gradient */
+.surface-gradient {
+  background: linear-gradient(145deg, #111827 0%, #0c1420 100%);
+}
+
+/* Accent glow on hover */
+.glow-hover:hover {
+  box-shadow: 0 0 24px rgba(0, 163, 255, 0.3), 0 0 0 1px rgba(0, 163, 255, 0.2);
+}
+
+/* Blue monochrome text gradient */
+.text-gradient {
+  background: linear-gradient(135deg, #38bdf8 0%, #00a3ff 50%, #0284c7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero gradient overlay */
+.hero-scrim {
+  background: linear-gradient(
+    to top,
+    #070a10 0%,
+    rgba(7, 10, 16, 0.85) 30%,
+    rgba(7, 10, 16, 0.35) 65%,
+    transparent 100%
+  );
+}
+
+/* Blue glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 163, 255, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(0, 163, 255, 0.7); }
+}
+.glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Plyr custom theme overrides */
+.plyr {
+  --plyr-color-main: #00a3ff;
+  --plyr-audio-controls-background: #0d1117;
+  --plyr-video-controls-background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.75));
+  border-radius: 0;
+}
