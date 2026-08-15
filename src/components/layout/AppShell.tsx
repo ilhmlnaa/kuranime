@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Menu, X, Compass } from 'lucide-react';
+import { Menu, X, Search } from 'lucide-react';
 import { Brand } from './Brand';
 import { AppHeader } from './AppHeader';
 import { AppFooter } from './AppFooter';
@@ -26,6 +26,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   className = '',
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
   const shouldReduceMotion = useReducedMotion();
 
   // Lock body scroll when mobile menu is open
@@ -86,9 +87,13 @@ export const AppShell: React.FC<AppShellProps> = ({
 
         <div className="flex items-center min-w-11 justify-end">
           {headerRightSlot || (
-            <div className="h-9 w-9 rounded-full bg-[#111827] border border-[#00a3ff]/15 flex items-center justify-center text-xs font-semibold text-slate-300">
-              <Compass className="h-4 w-4 text-[#00a3ff]" />
-            </div>
+            <Link
+              to="/anime"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#111827] border border-[#00a3ff]/15 text-slate-300 transition-colors hover:bg-[#00a3ff]/10 hover:text-[#00a3ff] focus-visible:outline-2 focus-visible:outline-[#00a3ff]"
+              aria-label="Cari Anime"
+            >
+              <Search className="h-4 w-4 text-[#00a3ff]" />
+            </Link>
           )}
         </div>
       </header>
@@ -115,7 +120,7 @@ export const AppShell: React.FC<AppShellProps> = ({
               exit="closed"
               className="fixed top-0 bottom-0 left-0 flex w-[280px] max-w-[85vw] flex-col border-r border-[#00a3ff]/10 bg-gradient-to-b from-[#0d1117] to-[#080b12] p-5 shadow-2xl shadow-black/80"
             >
-              <div className="flex items-center justify-between pb-6 border-b border-[#00a3ff]/10">
+              <div className="flex items-center justify-between pb-4 border-b border-[#00a3ff]/10">
                 <Brand size="md" />
                 <button
                   type="button"
@@ -127,8 +132,32 @@ export const AppShell: React.FC<AppShellProps> = ({
                 </button>
               </div>
 
+              {/* Mobile Drawer Search Form */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget;
+                  const input = form.elements.namedItem('mobileSearch') as HTMLInputElement;
+                  if (input?.value.trim()) {
+                    closeMobileMenu();
+                    navigate(`/anime?q=${encodeURIComponent(input.value.trim())}`);
+                  }
+                }}
+                className="pt-4"
+              >
+                <div className="relative flex items-center rounded-xl bg-[#111827] border border-white/[0.07]">
+                  <Search className="absolute left-3.5 h-4 w-4 text-slate-500 pointer-events-none" />
+                  <input
+                    name="mobileSearch"
+                    type="text"
+                    placeholder="Cari anime..."
+                    className="w-full bg-transparent py-2.5 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-500 outline-none"
+                  />
+                </div>
+              </form>
+
               {/* Navigation Links */}
-              <nav className="flex-1 overflow-y-auto py-6 space-y-1.5" aria-label="Mobile Navigation Links">
+              <nav className="flex-1 overflow-y-auto pt-4 pb-2 space-y-1.5" aria-label="Mobile Navigation Links">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   return (
