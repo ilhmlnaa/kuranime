@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, List, Radio, Download, ExternalLink } from '
 import { useAnimeDetail, useEpisode, useStream } from '../hooks/useAnime';
 import { useHistoryStore } from '../store/useHistoryStore';
 import { VideoPlayer } from '../components/ui/VideoPlayer';
-import { SkeletonGrid } from '../components/ui/SkeletonGrid';
+import { WatchPageSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
 import type { DownloadQuality } from '../types';
 
@@ -49,7 +49,7 @@ export default function WatchPage() {
     }
   }, [anime, episodeData, addHistory]);
 
-  if (isEpLoading) return <div className="p-8"><SkeletonGrid count={2} /></div>;
+  if (isEpLoading) return <WatchPageSkeleton />;
   if (error || !episodeData) return <ErrorState message={error?.message ?? 'Gagal memuat episode'} />;
 
   const episodesList = (anime?.episodes ?? []) as Array<{ episode: number }>;

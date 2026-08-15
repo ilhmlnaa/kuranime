@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Play, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useHome } from '../hooks/useAnime';
-import { SkeletonGrid } from '../components/ui/SkeletonGrid';
+import { HomePageSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { AnimeCard } from '../components/ui/AnimeCard';
@@ -16,7 +16,7 @@ function getAnimeId(url?: string): string {
 export default function HomePage() {
   const { data, isLoading, error, refetch } = useHome();
 
-  if (isLoading) return <div className="p-8"><SkeletonGrid count={12} /></div>;
+  if (isLoading) return <HomePageSkeleton />;
   if (error) return <ErrorState message={error.message} onRetry={refetch} />;
   if (!data) return null;
 

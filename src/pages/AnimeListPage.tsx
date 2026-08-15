@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, X, Filter } from 'lucide-react';
 import { useAnimeList, useAnimeSearch } from '../hooks/useAnime';
-import { SkeletonGrid } from '../components/ui/SkeletonGrid';
+import { AnimeListSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
 import { EmptyState } from '../components/ui/EmptyState';
 import { AnimeCard } from '../components/ui/AnimeCard';
@@ -93,7 +93,7 @@ export default function AnimeListPage() {
 
       {/* Content */}
       {isLoading ? (
-        <SkeletonGrid count={24} />
+        <AnimeListSkeleton />
       ) : error ? (
         <ErrorState message={error.message} onRetry={refetch} />
       ) : results.length === 0 ? (

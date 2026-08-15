@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Clock, Play, Trash2 } from 'lucide-react';
 import { useSchedule } from '../hooks/useAnime';
 import type { ScheduleDay, ScheduleItem } from '../types';
-import { SkeletonGrid } from '../components/ui/SkeletonGrid';
+import { SchedulePageSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
 import { EmptyState } from '../components/ui/EmptyState';
 
@@ -60,7 +60,7 @@ export default function SchedulePage() {
 
       {/* Content */}
       {isLoading ? (
-        <SkeletonGrid count={8} variant="row" />
+        <SchedulePageSkeleton />
       ) : error ? (
         <ErrorState message={error.message} onRetry={refetch} />
       ) : scheduleItems.length === 0 ? (

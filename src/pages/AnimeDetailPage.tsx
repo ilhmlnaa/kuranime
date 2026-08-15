@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Play, BookmarkPlus, BookmarkCheck, Star, Info } from 'lucide-react';
 import { useAnimeDetail } from '../hooks/useAnime';
 import { useWatchlistStore } from '../store/useWatchlistStore';
-import { SkeletonGrid } from '../components/ui/SkeletonGrid';
+import { AnimeDetailSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
 
 export default function AnimeDetailPage() {
@@ -13,7 +13,7 @@ export default function AnimeDetailPage() {
   const addToWatchlist = useWatchlistStore((s) => s.add);
   const removeFromWatchlist = useWatchlistStore((s) => s.remove);
 
-  if (isLoading) return <div className="p-8"><SkeletonGrid count={6} /></div>;
+  if (isLoading) return <AnimeDetailSkeleton />;
   if (error) return <ErrorState message={error.message} onRetry={refetch} />;
   if (!anime) return <ErrorState message="Anime tidak ditemukan" />;
 
