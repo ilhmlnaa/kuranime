@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Menu, X, Compass } from 'lucide-react';
 import { Brand } from './Brand';
+import { AppHeader } from './AppHeader';
+import { AppFooter } from './AppFooter';
 import { DEFAULT_NAV_ITEMS } from './navItems';
 import type { NavItem } from './navItems';
 
@@ -247,17 +249,16 @@ export const AppShell: React.FC<AppShellProps> = ({
 
       {/* Main Content Area */}
       <div className="flex min-h-screen flex-col md:pl-64">
-        {/* Desktop Top Bar */}
-        {headerRightSlot && (
-          <header className="sticky top-0 z-20 hidden h-16 w-full items-center justify-end border-b border-[#00a3ff]/10 bg-[#070a10]/90 px-8 backdrop-blur-sm md:flex">
-            {headerRightSlot}
-          </header>
-        )}
+        {/* Desktop Auto-Hide Header with Search */}
+        <AppHeader />
 
-        {/* Content - Removed mx-auto to fix the excessive gap to sidebar */}
+        {/* Content */}
         <main className="flex-1 w-full">
           {children}
         </main>
+
+        {/* Footer */}
+        <AppFooter />
       </div>
     </div>
   );
