@@ -29,6 +29,7 @@ export interface HomeData extends FlexibleRecord {
 
 export interface AnimeListItem extends AnimeBase {
   id: string
+  img?: string
 }
 
 export interface AnimeListData extends FlexibleRecord {

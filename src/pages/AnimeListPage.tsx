@@ -110,6 +110,7 @@ export default function AnimeListPage() {
                 id={anime.id}
                 slug={anime.slug}
                 title={anime.title}
+                cover={anime.img}
               />
             ))}
           </div>
