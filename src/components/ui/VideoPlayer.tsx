@@ -61,7 +61,7 @@ export function VideoPlayer({
         </span>
       </div>
 
-      <div className="relative aspect-video w-full bg-black">
+      <div className="relative w-full bg-black aspect-video overflow-hidden">
         {isLoading ? (
           <PlayerLoading label="Menyiapkan streaming..." />
         ) : !hasSource ? (
@@ -72,13 +72,15 @@ export function VideoPlayer({
           </div>
         ) : isKuramaDrive && proxiedSource ? (
           /* KuramaDrive Stream via ZenProxy + Plyr */
-          <KuramaDrivePlyr
-            videoUrl={proxiedSource.url}
-            streamType={proxiedSource.type}
-            poster={poster}
-            title={title}
-            onEnded={onEnded}
-          />
+          <div className="absolute inset-0 h-full w-full [&_.plyr]:h-full [&_.plyr]:w-full [&_.plyr__video-wrapper]:h-full [&_.plyr__video-wrapper]:w-full [&_video]:h-full [&_video]:w-full [&_video]:object-contain">
+            <KuramaDrivePlyr
+              videoUrl={proxiedSource.url}
+              streamType={proxiedSource.type}
+              poster={poster}
+              title={title}
+              onEnded={onEnded}
+            />
+          </div>
         ) : proxiedSource ? (
           /* Other direct MP4 video sources */
           <video

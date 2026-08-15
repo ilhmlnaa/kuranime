@@ -31,7 +31,29 @@ function injectLink(href: string, id: string) {
 
 function injectScript(src: string, id: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (document.getElementById(id)) { resolve(); return; }
+    // If the element already exists, we must ensure it has finished loading
+    if (document.getElementById(id)) {
+      if (id === 'plyr-js' && (window.Plyr || window.Plyr?.default)) {
+        resolve();
+      } else if (id === 'hls-js' && window.Hls) {
+        resolve();
+      } else {
+        // Script tag exists but global object is not ready yet. Poll for it.
+        const checkInterval = setInterval(() => {
+          if (
+            (id === 'plyr-js' && (window.Plyr || window.Plyr?.default)) ||
+            (id === 'hls-js' && window.Hls)
+          ) {
+            clearInterval(checkInterval);
+            resolve();
+          }
+        }, 100);
+        // Timeout after 10 seconds
+        setTimeout(() => { clearInterval(checkInterval); reject(new Error(`Timeout loading ${id}`)); }, 10000);
+      }
+      return;
+    }
+    
     const script = document.createElement('script');
     script.id = id;
     script.src = src;
@@ -108,7 +130,7 @@ export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster,
     if (!PlyrClass) {
       Promise.resolve().then(() => {
         setHasError(true);
-        setErrorMsg('Plyr gagal dimuat.');
+        setErrorMsg('Plyr belum tersedia saat diinisialisasi.');
       });
       return;
     }
