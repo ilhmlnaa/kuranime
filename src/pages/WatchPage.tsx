@@ -99,20 +99,6 @@ export default function WatchPage() {
 
   return (
     <div className="pb-16 relative">
-      {/* Compact backdrop: keeps the watch interface focused on the player */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[36vh] min-h-[280px] overflow-hidden md:h-[42vh]">
-        <div className="absolute inset-0 z-10 bg-linear-to-t from-[#070a10] via-[#070a10]/85 to-[#070a10]/20" />
-        <div className="absolute inset-0 z-10 bg-linear-to-r from-[#070a10]/75 via-transparent to-[#070a10]/35" />
-        {anime?.cover && (
-          <Image
-            src={anime.cover as string}
-            alt=""
-            containerClassName="absolute inset-0 h-full w-full"
-            className="h-full w-full object-cover object-center opacity-30 blur-[2px] md:opacity-35"
-          />
-        )}
-      </div>
-
       <div className="relative z-10 mx-auto flex max-w-[1920px] flex-col gap-6 px-4 py-6 md:px-8">
         {/* Breadcrumbs */}
         <Breadcrumbs
