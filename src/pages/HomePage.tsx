@@ -46,9 +46,10 @@ export default function HomePage() {
     <div className="flex flex-col gap-12 pb-16">
       {/* Hero Section */}
       {heroAnime && (
-        <section className="relative w-full h-[56vh] min-h-[360px] md:h-[72vh] overflow-hidden group">
-          <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/60 to-transparent z-10" />
-          <div className="absolute inset-0 bg-linear-to-r from-[#070a10] via-[#070a10]/30 to-transparent z-10 w-2/3" />
+        <section className="relative w-full h-[62vh] min-h-[420px] md:h-[72vh] overflow-hidden group">
+          {/* Gradients */}
+          <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/70 to-transparent z-10" />
+          <div className="absolute inset-0 bg-linear-to-r from-[#070a10] via-[#070a10]/50 to-transparent z-10 w-full md:w-2/3" />
           
           <AnimatePresence mode="popLayout">
             <motion.div
@@ -62,39 +63,44 @@ export default function HomePage() {
               <Image
                 src={heroAnime.img}
                 alt={heroAnime.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
               />
             </motion.div>
           </AnimatePresence>
 
-          <div className="absolute bottom-0 left-0 right-0 px-4 py-8 md:px-8 md:py-12 z-20 flex flex-col gap-4 max-w-3xl">
+          {/* Hero Content */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 py-6 md:px-8 md:py-12 z-20 flex flex-col gap-3 md:gap-4 max-w-3xl">
             <AnimatePresence mode="wait">
               <motion.div
                 key={heroAnime.slug}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4 }}
-                className="flex flex-col gap-4"
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.35 }}
+                className="flex flex-col gap-2.5 sm:gap-4"
               >
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-[#00a3ff]" />
-                  <span className="text-xs font-semibold uppercase tracking-widest text-[#00a3ff]">Featured</span>
+                  <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#00a3ff]/15 border border-[#00a3ff]/30 text-[#00a3ff] text-[11px] font-bold uppercase tracking-wider">
+                    <TrendingUp className="w-3.5 h-3.5" />
+                    Featured
+                  </span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg leading-tight line-clamp-2">
+
+                <h1 className="text-xl sm:text-3xl md:text-5xl font-bold text-white drop-shadow-lg leading-tight line-clamp-2">
                   {heroAnime.title}
                 </h1>
-                <div className="flex items-center gap-3 mt-2">
+
+                <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mt-1 sm:mt-2">
                   <Link
                     to={`/anime/${getAnimeId(heroAnime.url)}/${heroAnime.slug}`}
-                    className="flex items-center gap-2 bg-[#00a3ff] hover:bg-[#00a3ff]/90 text-white px-6 py-3 rounded-full font-semibold transition-all shadow-[0_0_20px_rgba(0,163,255,0.3)] hover:shadow-[0_0_28px_rgba(0,163,255,0.45)] text-sm"
+                    className="flex items-center gap-2 bg-[#00a3ff] hover:bg-[#00a3ff]/90 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-full font-bold transition-all shadow-[0_0_20px_rgba(0,163,255,0.3)] hover:shadow-[0_0_28px_rgba(0,163,255,0.45)] text-xs sm:text-sm active:scale-95"
                   >
-                    <Play className="w-4 h-4 fill-current" />
+                    <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
                     Nonton Sekarang
                   </Link>
                   <Link
                     to={`/anime/${getAnimeId(heroAnime.url)}/${heroAnime.slug}`}
-                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-full font-semibold border border-white/20 transition-all text-sm backdrop-blur-md"
+                    className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2.5 sm:px-6 sm:py-3 rounded-full font-semibold border border-white/20 transition-all text-xs sm:text-sm backdrop-blur-md active:scale-95"
                   >
                     Detail Info
                   </Link>
@@ -105,34 +111,34 @@ export default function HomePage() {
 
           {/* Carousel Navigation Controls */}
           {carouselItems.length > 1 && (
-            <div className="absolute bottom-6 right-4 md:bottom-8 md:right-8 z-30 flex flex-col items-end gap-3">
+            <div className="absolute top-4 right-4 md:top-auto md:bottom-8 md:right-8 z-30 flex items-center md:flex-col md:items-end gap-2 md:gap-3">
               {/* Arrows */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <button
                   onClick={handlePrev}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-all hover:bg-[#00a3ff] hover:text-white border border-white/10"
+                  className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-all hover:bg-[#00a3ff] hover:text-white border border-white/15 active:scale-90"
                   aria-label="Previous slide"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
                 <button
                   onClick={handleNext}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-all hover:bg-[#00a3ff] hover:text-white border border-white/10"
+                  className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md transition-all hover:bg-[#00a3ff] hover:text-white border border-white/15 active:scale-90"
                   aria-label="Next slide"
                 >
-                  <ChevronRight className="h-5 w-5" />
+                  <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               </div>
-              
+
               {/* Dots */}
-              <div className="flex items-center gap-2 bg-black/30 px-3 py-2 rounded-full backdrop-blur-md border border-white/5">
+              <div className="flex items-center gap-1.5 bg-black/40 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-full backdrop-blur-md border border-white/10">
                 {carouselItems.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveIndex(idx)}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                      idx === activeIndex 
-                        ? 'w-6 bg-[#00a3ff] shadow-[0_0_8px_rgba(0,163,255,0.8)]' 
+                      idx === activeIndex
+                        ? 'w-5 sm:w-6 bg-[#00a3ff] shadow-[0_0_8px_rgba(0,163,255,0.8)]'
                         : 'w-1.5 bg-white/30 hover:bg-white/60'
                     }`}
                     aria-label={`Go to slide ${idx + 1}`}
