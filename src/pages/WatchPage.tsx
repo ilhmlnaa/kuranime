@@ -68,6 +68,7 @@ export default function WatchPage() {
         {/* Left Column: Player & Info */}
         <div className="lg:col-span-3 flex flex-col gap-4">
           <VideoPlayer
+            key={`${activeServer}-${videoUrl ?? iframeUrl ?? 'none'}`}
             videoUrl={isKuramaDrive ? videoUrl : undefined}
             iframeUrl={!isKuramaDrive ? (iframeUrl ?? videoUrl) : undefined}
             title={anime ? `${anime.title} · Episode ${ep}` : `Episode ${ep}`}

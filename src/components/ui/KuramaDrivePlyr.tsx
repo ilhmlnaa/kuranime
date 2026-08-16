@@ -89,7 +89,7 @@ const PLYR_CONFIG = {
 };
 
 export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster, onEnded }: KuramaDrivePlyrProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<unknown>(null);
   const [libsReady, setLibsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -117,8 +117,18 @@ export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster,
 
   // Init Plyr + optional HLS
   useEffect(() => {
-    if (!libsReady || !videoRef.current) return;
-    const video = videoRef.current;
+    if (!libsReady || !containerRef.current) return;
+    
+    // Clear the container first to prevent DOM conflicts with React
+    containerRef.current.innerHTML = '';
+    
+    const video = document.createElement('video');
+    video.playsInline = true;
+    if (poster) video.poster = poster;
+    if (title) video.title = title;
+    video.style.width = '100%';
+    video.style.height = '100%';
+    containerRef.current.appendChild(video);
 
     // Cleanup previous instance
     if (playerRef.current) {
@@ -156,13 +166,17 @@ export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster,
       playerRef.current = { destroy: () => { plyr.destroy(); } };
     }
 
+    const container = containerRef.current;
     return () => {
       if (playerRef.current) {
         try { (playerRef.current as { destroy: () => void }).destroy(); } catch { /* ignore */ }
         playerRef.current = null;
       }
+      // Container contents are imperative and isolated from React.
+      // Clear only after Plyr has restored/destroyed its own DOM wrappers.
+      if (container) container.replaceChildren();
     };
-  }, [libsReady, videoUrl, streamType, onEnded]);
+  }, [libsReady, videoUrl, streamType, title, poster, onEnded]);
 
   if (hasError) {
     return (
@@ -192,12 +206,9 @@ export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster,
   }
 
   return (
-    <video
-      ref={videoRef}
-      poster={poster}
-      playsInline
-      title={title}
-      style={{ width: '100%', height: '100%' }}
+    <div 
+      ref={containerRef} 
+      className="absolute inset-0 w-full h-full" 
     />
   );
 }
