@@ -132,7 +132,8 @@ export default function WatchPage() {
                 <Image
                   src={anime.cover}
                   alt=""
-                  className="hidden h-16 w-12 shrink-0 rounded-lg object-cover ring-1 ring-white/10 sm:block"
+                  containerClassName="hidden h-16 w-12 shrink-0 rounded-lg ring-1 ring-white/10 sm:block"
+                  className="h-full w-full object-cover"
                 />
               ) : null}
               <div className="min-w-0">
