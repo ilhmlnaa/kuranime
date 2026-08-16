@@ -76,13 +76,20 @@ export interface DownloadQuality extends FlexibleRecord {
   links: DownloadLink[]
 }
 
+export interface NavigationItem extends FlexibleRecord {
+  id?: string | number
+  episode?: string | number
+  url?: string
+}
+
 export interface EpisodeNavigation extends FlexibleRecord {
-  previous?: unknown
-  next?: unknown
+  prev?: NavigationItem | null
+  next?: NavigationItem | null
 }
 
 export interface EpisodeData extends FlexibleRecord {
   animeId: string
+  slug?: string
   episode: string | number
   title: string
   animeTitle: string

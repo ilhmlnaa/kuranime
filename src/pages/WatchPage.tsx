@@ -32,29 +32,41 @@ export default function WatchPage() {
 
   const addHistory = useHistoryStore((s) => s.add);
 
+  // Save to history (depend strictly on episodeData to avoid empty history if anime detail fails)
   useEffect(() => {
-    if (anime && episodeData) {
+    if (episodeData) {
       addHistory({
-        animeId: anime.id,
-        slug: anime.slug,
-        title: anime.title,
-        animeTitle: anime.title,
-        episode: episodeData.episode,
-        cover: anime.cover as string | undefined,
+        animeId: id ?? episodeData.animeId,
+        slug: episodeData.slug ?? anime?.slug ?? '',
+        title: episodeData.animeTitle || anime?.title || 'Unknown Anime',
+        animeTitle: episodeData.animeTitle || anime?.title || 'Unknown Anime',
+        episode: episodeData.episode || ep || 1,
+        cover: (anime?.cover as string | undefined) ?? '',
       });
     }
-  }, [anime, episodeData, addHistory]);
+  }, [episodeData, anime, id, ep, addHistory]);
 
   if (isEpLoading) return <WatchPageSkeleton />;
   if (error || !episodeData) return <ErrorState message={error?.message ?? 'Gagal memuat episode'} />;
 
-  // Better navigation logic: find by index instead of arithmetic (to support "8.5", "11a", etc.)
+  // -- Navigation: prefer API-provided navigation object, fallback to episode list scan --
+  const navPrev = episodeData.navigation?.prev;
+  const navNext = episodeData.navigation?.next;
+
+  // Fallback: scan anime episode list sorted by number
   const rawEpisodes = (anime?.episodes ?? []) as Array<{ episode: string | number; title?: string }>;
   const sortedEpisodes = [...rawEpisodes].sort((a, b) => Number(a.episode) - Number(b.episode));
-  
   const currentIndex = sortedEpisodes.findIndex(e => String(e.episode) === String(ep));
-  const prevEp = currentIndex > 0 ? sortedEpisodes[currentIndex - 1] : undefined;
-  const nextEp = currentIndex !== -1 && currentIndex < sortedEpisodes.length - 1 ? sortedEpisodes[currentIndex + 1] : undefined;
+  const listPrev = currentIndex > 0 ? sortedEpisodes[currentIndex - 1] : undefined;
+  const listNext = currentIndex !== -1 && currentIndex < sortedEpisodes.length - 1 ? sortedEpisodes[currentIndex + 1] : undefined;
+
+  // Use API navigation.prev/next first, fall back to episode list
+  const prevEpNum = navPrev?.episode ?? listPrev?.episode;
+  const nextEpNum = navNext?.episode ?? listNext?.episode;
+
+  // Slug for back-to-detail link: episodeData.slug > anime.slug > id as fallback
+  const animeSlug = episodeData.slug ?? anime?.slug ?? '';
+  const backToDetailUrl = animeSlug ? `/anime/${id}/${animeSlug}` : `/anime/${id}`;
 
   const videoUrl = activeServer === 'kuramadrive' && defaultStreamUrl ? defaultStreamUrl : streamData?.videoUrl as string | undefined;
   const iframeUrl = streamData?.iframeUrl as string | undefined;
@@ -80,20 +92,18 @@ export default function WatchPage() {
           {/* Episode Info & Navigation */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#111620] p-4 sm:p-5 rounded-2xl border border-[#00a3ff]/10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
             <div>
-              {anime && (
-                <Link to={`/anime/${anime.id}/${anime.slug}`} className="text-[#00a3ff] hover:underline font-semibold text-sm drop-shadow-sm">
-                  {anime.title}
-                </Link>
-              )}
+              <Link to={backToDetailUrl} className="text-[#00a3ff] hover:underline font-semibold text-sm drop-shadow-sm">
+                {episodeData.animeTitle || anime?.title || 'Anime Details'}
+              </Link>
               <h1 className="text-white text-xl sm:text-2xl font-bold mt-1 tracking-tight">
                 {episodeData.title || `Episode ${ep}`}
               </h1>
             </div>
 
             <div className="flex items-center gap-2 flex-shrink-0">
-              <NavBtn to={prevEp ? `/anime/${id}/episode/${prevEp.episode}` : undefined} label="Episode Sebelumnya" icon={<ChevronLeft className="w-5 h-5" />} text="Prev" />
-              <NavBtn to={`/anime/${id}`} label="Daftar Episode" icon={<List className="w-5 h-5" />} />
-              <NavBtn to={nextEp ? `/anime/${id}/episode/${nextEp.episode}` : undefined} label="Episode Selanjutnya" icon={<ChevronRight className="w-5 h-5" />} text="Next" reverse />
+              <NavBtn to={prevEpNum ? `/anime/${id}/episode/${prevEpNum}` : undefined} label="Episode Sebelumnya" icon={<ChevronLeft className="w-5 h-5" />} text="Prev" />
+              <NavBtn to={backToDetailUrl} label="Daftar Episode" icon={<List className="w-5 h-5" />} />
+              <NavBtn to={nextEpNum ? `/anime/${id}/episode/${nextEpNum}` : undefined} label="Episode Selanjutnya" icon={<ChevronRight className="w-5 h-5" />} text="Next" reverse />
             </div>
           </div>
         </div>
