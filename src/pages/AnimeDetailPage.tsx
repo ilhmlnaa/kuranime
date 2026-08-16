@@ -55,20 +55,23 @@ export default function AnimeDetailPage() {
         />
       </div>
 
-      {/* Banner */}
-      <div className="absolute top-0 left-0 right-0 h-[45vh] md:h-[55vh] w-full pointer-events-none z-0">
-        <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/80 to-transparent z-10" />
-        <div className="absolute inset-0 bg-linear-to-r from-[#070a10] via-[#070a10]/40 to-transparent z-10" />
+      {/* Netflix-style Cinematic Banner Backdrop */}
+      <div className="absolute top-0 left-0 right-0 h-[52vh] sm:h-[60vh] md:h-[70vh] min-h-[400px] w-full overflow-hidden pointer-events-none z-0">
+        {/* Layer Gradients */}
+        <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/65 to-transparent z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#070a10]/90 via-[#070a10]/40 to-transparent z-10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_30%,#070a10_90%)] z-10" />
+
         {coverSrc && (
           <Image
             src={coverSrc}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-30 blur-[4px]"
+            className="absolute inset-0 w-full h-full object-cover object-top opacity-65 md:opacity-75 scale-105 transition-transform duration-1000"
           />
         )}
       </div>
 
-      <div className="px-4 md:px-8 max-w-[1920px] mx-auto mt-4 md:mt-12 relative z-20">
+      <div className="px-4 md:px-8 max-w-[1920px] mx-auto pt-16 sm:pt-24 md:pt-36 relative z-20">
         <div className="grid grid-cols-[120px_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)] gap-4 sm:gap-6 md:gap-8 items-start">
           
           {/* Left: Poster & Actions */}
