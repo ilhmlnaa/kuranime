@@ -70,7 +70,14 @@ export const AppShell: React.FC<AppShellProps> = ({
   };
 
   return (
-    <div className={`min-h-screen bg-[#070a10] text-slate-100 antialiased ${className}`}>
+    <div className={`min-h-screen bg-[#070a10] text-slate-100 antialiased relative ${className}`}>
+      
+      {/* Global Background Texture (Matrix Grid + Glow) */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,163,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,163,255,0.04)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,#000_20%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_50%_at_50%_-20%,rgba(0,163,255,0.08)_0%,transparent_60%)]" />
+      </div>
+
       {/* Mobile Top Header */}
       <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#00a3ff]/20 bg-gradient-to-r from-[#0d1117] via-[#091120] to-[#0b0e14] px-4 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,163,255,0.06)] md:hidden">
         <button
@@ -277,7 +284,7 @@ export const AppShell: React.FC<AppShellProps> = ({
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex min-h-screen flex-col md:pl-64">
+      <div className="relative z-10 flex min-h-screen flex-col md:pl-64">
         {/* Desktop Auto-Hide Header with Search */}
         <AppHeader />
 
