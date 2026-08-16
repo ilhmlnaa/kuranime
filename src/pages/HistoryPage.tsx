@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Play, Trash2, Clock } from 'lucide-react';
 import { useHistoryStore } from '../store/useHistoryStore';
 import { EmptyState } from '../components/ui/EmptyState';
+import { Image } from '../components/ui/Image';
 
 export default function HistoryPage() {
   const items = useHistoryStore((s) => s.items);
@@ -48,7 +49,7 @@ export default function HistoryPage() {
               {/* Poster */}
               <div className="flex-shrink-0 w-12 h-16 md:w-14 md:h-20 rounded-xl overflow-hidden bg-[#0b0e14] border border-white/10">
                 {item.cover && (
-                  <img src={item.cover} alt={item.title} className="w-full h-full object-cover" />
+                  <Image src={item.cover} alt={item.title} className="w-full h-full object-cover" />
                 )}
               </div>
 

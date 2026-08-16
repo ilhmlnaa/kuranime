@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Bookmark, Star, Play, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Image } from './Image';
 
 export interface AnimeCardProps {
   id: string | number;
@@ -55,7 +56,7 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
     <>
       {/* Background Poster Image */}
       {imageSrc ? (
-        <img
+        <Image
           src={imageSrc}
           alt={`Poster ${title}`}
           loading="lazy"

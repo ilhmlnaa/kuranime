@@ -4,6 +4,8 @@ import { useAnimeDetail } from '../hooks/useAnime';
 import { useWatchlistStore } from '../store/useWatchlistStore';
 import { AnimeDetailSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
+import { Breadcrumbs } from '../components/ui/Breadcrumbs';
+import { Image } from '../components/ui/Image';
 
 export default function AnimeDetailPage() {
   const { id, slug } = useParams<{ id: string; slug?: string }>();
@@ -47,7 +49,7 @@ export default function AnimeDetailPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0b0e14] via-[#0b0e14]/80 to-transparent z-10" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0b0e14] via-[#0b0e14]/40 to-transparent z-10" />
         {coverSrc && (
-          <img
+          <Image
             src={coverSrc}
             alt={anime.title}
             className="absolute inset-0 w-full h-full object-cover opacity-50"
@@ -56,12 +58,21 @@ export default function AnimeDetailPage() {
       </div>
 
       <div className="px-4 md:px-8 max-w-7xl mx-auto -mt-32 relative z-20">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: 'Anime', to: '/anime' },
+            { label: anime.title },
+          ]}
+          className="mb-5 mt-2"
+        />
+
         <div className="flex flex-col md:flex-row gap-8">
           {/* Poster */}
           <div className="flex-shrink-0 mx-auto md:mx-0 w-[180px] md:w-[220px] flex flex-col gap-4">
-            <div className="rounded-xl overflow-hidden shadow-2xl border border-white/10 aspect-[3/4] bg-[#121620]">
+            <div className="rounded-xl overflow-hidden shadow-2xl border border-white/10 aspect-[3/4]">
               {coverSrc && (
-                <img src={coverSrc} alt={anime.title} className="w-full h-full object-cover" />
+                <Image src={coverSrc} alt={anime.title} className="w-full h-full object-cover" />
               )}
             </div>
 

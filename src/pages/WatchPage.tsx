@@ -6,6 +6,8 @@ import { useHistoryStore } from '../store/useHistoryStore';
 import { VideoPlayer } from '../components/ui/VideoPlayer';
 import { WatchPageSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
+import { Breadcrumbs } from '../components/ui/Breadcrumbs';
+import { Image } from '../components/ui/Image';
 import type { DownloadQuality } from '../types';
 
 /**
@@ -97,6 +99,14 @@ export default function WatchPage() {
 
   return (
     <div className="flex flex-col gap-6 px-4 md:px-8 py-6 max-w-screen-2xl mx-auto pb-16">
+      {/* Breadcrumbs */}
+      <Breadcrumbs
+        items={[
+          { label: 'Anime', to: '/anime' },
+          { label: displayTitle, to: backToDetailUrl },
+          { label: `Episode ${episodeData.episode}` },
+        ]}
+      />
       
       {/* Top Grid: Player (Left) + Server Selection (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
@@ -117,7 +127,7 @@ export default function WatchPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#111620] p-4 sm:p-5 rounded-2xl border border-[#00a3ff]/10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
             <div className="flex min-w-0 items-center gap-3">
               {anime?.cover ? (
-                <img
+                <Image
                   src={anime.cover}
                   alt=""
                   className="hidden h-16 w-12 shrink-0 rounded-lg object-cover ring-1 ring-white/10 sm:block"
@@ -163,12 +173,13 @@ export default function WatchPage() {
                  <ServerBtn 
                    isActive={activeServer === 'kuramadrive'} 
                    onClick={() => setSelectedServer('kuramadrive')}
-                   label="Kuramadrive (Default)"
+                   label="Kuranime (Default)"
                  />
               )}
               {servers.map((server) => {
                 const serverId = server.id ?? '';
-                const serverLabel = server.label ?? server.name ?? serverId;
+                const rawLabel = server.label ?? server.name ?? serverId;
+                const serverLabel = rawLabel.replace(/^Kuramadrive\s*s1.*$/i, 'Kuranime');
                 return (
                   <ServerBtn 
                     key={serverId}

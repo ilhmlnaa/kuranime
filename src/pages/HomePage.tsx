@@ -6,6 +6,7 @@ import { HomePageSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
 import { SectionHeader } from '../components/ui/SectionHeader';
 import { AnimeCard } from '../components/ui/AnimeCard';
+import { Image } from '../components/ui/Image';
 
 function getAnimeId(url?: string): string {
   if (!url) return '';
@@ -29,7 +30,7 @@ export default function HomePage() {
         <section className="relative w-full h-[56vh] min-h-[360px] md:h-[72vh] overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-[#0b0e14] via-[#0b0e14]/60 to-transparent z-10" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0b0e14] via-[#0b0e14]/30 to-transparent z-10 w-2/3" />
-          <img
+          <Image
             src={heroAnime.img}
             alt={heroAnime.title}
             className="absolute inset-0 w-full h-full object-cover"
