@@ -71,8 +71,8 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
       )}
 
       {/* Modern Vignette & Bottom Gradient Scrim */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#070a10] via-[#070a10]/50 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-95" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent opacity-70" />
+      <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/50 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-95" />
+      <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-transparent opacity-70" />
 
       {/* Hover Central Play Button (Aesthetic & Light) */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">

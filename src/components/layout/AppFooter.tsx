@@ -5,7 +5,7 @@ export function AppFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full mt-auto border-t border-[#00a3ff]/20 bg-gradient-to-r from-[#070a10] via-[#08111f] to-[#070a10] shadow-[0_-4px_24px_rgba(0,163,255,0.04)]">
+    <footer className="w-full mt-auto border-t border-[#00a3ff]/20 bg-linear-to-r from-[#070a10] via-[#08111f] to-[#070a10] shadow-[0_-4px_24px_rgba(0,163,255,0.04)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           

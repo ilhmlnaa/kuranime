@@ -281,7 +281,7 @@ function ServerBtn({ isActive, onClick, label }: { isActive: boolean; onClick: (
       onClick={onClick}
       className={`relative px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border overflow-hidden group ${
         isActive
-          ? 'bg-gradient-to-r from-[#00a3ff]/15 to-transparent border-[#00a3ff]/40 text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
+          ? 'bg-linear-to-r from-[#00a3ff]/15 to-transparent border-[#00a3ff]/40 text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
           : 'bg-[#0b0e14] border-white/5 text-slate-400 hover:text-slate-200 hover:bg-[#1a1f2e] hover:border-white/10'
       }`}
     >

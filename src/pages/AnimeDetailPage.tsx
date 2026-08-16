@@ -56,8 +56,8 @@ export default function AnimeDetailPage() {
 
       {/* Banner */}
       <div className="relative w-full h-[38vh] md:h-[48vh]">
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0e14] via-[#0b0e14]/80 to-transparent z-10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0b0e14] via-[#0b0e14]/40 to-transparent z-10" />
+        <div className="absolute inset-0 bg-linear-to-t from-[#0b0e14] via-[#0b0e14]/80 to-transparent z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#0b0e14] via-[#0b0e14]/40 to-transparent z-10" />
         {coverSrc && (
           <Image
             src={coverSrc}

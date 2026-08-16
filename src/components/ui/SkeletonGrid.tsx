@@ -52,7 +52,7 @@ export const SkeletonGrid: React.FC<SkeletonGridProps> = ({
           className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#0d1117] ring-1 ring-white/[0.04] animate-pulse"
         >
           {/* Subtle gradient to mimic the card's scrim */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent" />
           
           {/* Dummy text lines at bottom */}
           <div className="absolute inset-x-0 bottom-0 p-3 space-y-2">

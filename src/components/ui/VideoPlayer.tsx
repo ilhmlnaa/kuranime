@@ -52,7 +52,7 @@ export function VideoPlayer({
       aria-label={title ? `Pemutar video: ${title}` : 'Pemutar video'}
     >
       {/* Minimal Modern Browser-like Top Bar */}
-      <div className="relative flex min-h-10 items-center justify-between border-b border-white/[0.05] bg-gradient-to-r from-[#0d1117] via-[#111620] to-[#0d1117] px-4">
+      <div className="relative flex min-h-10 items-center justify-between border-b border-white/[0.05] bg-linear-to-r from-[#0d1117] via-[#111620] to-[#0d1117] px-4">
         <div className="flex items-center gap-1.5 flex-shrink-0" aria-hidden="true">
           <span className="h-2 w-2 rounded-full bg-[#00a3ff]/80 shadow-[0_0_6px_rgba(0,163,255,0.5)]" />
           <span className="h-2 w-2 rounded-full bg-[#00a3ff]/40" />

@@ -79,7 +79,7 @@ export const AppShell: React.FC<AppShellProps> = ({
       </div>
 
       {/* Mobile Top Header */}
-      <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#00a3ff]/20 bg-gradient-to-r from-[#0d1117] via-[#091120] to-[#0b0e14] px-4 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,163,255,0.06)] md:hidden">
+      <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#00a3ff]/20 bg-linear-to-r from-[#0d1117] via-[#091120] to-[#0b0e14] px-4 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,163,255,0.06)] md:hidden">
         <button
           type="button"
           onClick={() => setMobileMenuOpen(true)}
@@ -125,7 +125,7 @@ export const AppShell: React.FC<AppShellProps> = ({
               initial="closed"
               animate="open"
               exit="closed"
-              className="fixed top-0 bottom-0 left-0 flex w-[280px] max-w-[85vw] flex-col border-r border-[#00a3ff]/10 bg-gradient-to-b from-[#0d1117] to-[#080b12] p-5 shadow-2xl shadow-black/80"
+              className="fixed top-0 bottom-0 left-0 flex w-[280px] max-w-[85vw] flex-col border-r border-[#00a3ff]/10 bg-linear-to-b from-[#0d1117] to-[#080b12] p-5 shadow-2xl shadow-black/80"
             >
               <div className="flex items-center justify-between pb-4 border-b border-[#00a3ff]/10">
                 <Brand size="md" />
@@ -176,7 +176,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                       className={({ isActive }) =>
                         `group flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-medium transition-all duration-150 focus-visible:outline-2 focus-visible:outline-[#00a3ff] ${
                           isActive
-                            ? 'bg-gradient-to-r from-[#00a3ff]/15 to-transparent text-[#00a3ff] font-semibold border-l-2 border-[#00a3ff]'
+                            ? 'bg-linear-to-r from-[#00a3ff]/15 to-transparent text-[#00a3ff] font-semibold border-l-2 border-[#00a3ff]'
                             : 'text-slate-400 hover:bg-[#00a3ff]/5 hover:text-slate-200'
                         }`
                       }
@@ -215,7 +215,7 @@ export const AppShell: React.FC<AppShellProps> = ({
       </AnimatePresence>
 
       {/* Desktop Fixed Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-[#00a3ff]/10 bg-gradient-to-b from-[#0d1117] via-[#090c13] to-[#07090f] md:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-[#00a3ff]/10 bg-linear-to-b from-[#0d1117] via-[#090c13] to-[#07090f] md:flex">
         {/* Brand Container */}
         <div className="flex h-16 items-center px-6 border-b border-[#00a3ff]/10">
           <Brand size="md" />
@@ -237,7 +237,7 @@ export const AppShell: React.FC<AppShellProps> = ({
                   className={({ isActive }) =>
                     `group relative flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-150 focus-visible:outline-2 focus-visible:outline-[#00a3ff] ${
                       isActive
-                        ? 'bg-gradient-to-r from-[#00a3ff]/15 via-[#00a3ff]/5 to-transparent text-[#00a3ff] font-semibold'
+                        ? 'bg-linear-to-r from-[#00a3ff]/15 via-[#00a3ff]/5 to-transparent text-[#00a3ff] font-semibold'
                         : 'text-slate-400 hover:bg-[#00a3ff]/5 hover:text-slate-200'
                     }`
                   }

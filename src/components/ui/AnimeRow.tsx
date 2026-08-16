@@ -80,7 +80,7 @@ export const AnimeRow: React.FC<AnimeRowProps> = ({
         {progress !== undefined && (
           <div className="mt-2 h-1 w-full rounded-full bg-slate-700 overflow-hidden" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#00a3ff] to-[#38bdf8] transition-all duration-500"
+              className="h-full rounded-full bg-linear-to-r from-[#00a3ff] to-[#38bdf8] transition-all duration-500"
               style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
             />
           </div>

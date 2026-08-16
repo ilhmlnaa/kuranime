@@ -47,8 +47,8 @@ export default function HomePage() {
       {/* Hero Section */}
       {heroAnime && (
         <section className="relative w-full h-[56vh] min-h-[360px] md:h-[72vh] overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#070a10] via-[#070a10]/60 to-transparent z-10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#070a10] via-[#070a10]/30 to-transparent z-10 w-2/3" />
+          <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/60 to-transparent z-10" />
+          <div className="absolute inset-0 bg-linear-to-r from-[#070a10] via-[#070a10]/30 to-transparent z-10 w-2/3" />
           
           <AnimatePresence mode="popLayout">
             <motion.div

@@ -21,7 +21,7 @@ export default function HistoryPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
-          <span className="w-1.5 h-7 bg-gradient-to-b from-[#38bdf8] to-[#0284c7] rounded-full inline-block" />
+          <span className="w-1.5 h-7 bg-linear-to-b from-[#38bdf8] to-[#0284c7] rounded-full inline-block" />
           Riwayat Tontonan
         </h1>
         {list.length > 0 && (

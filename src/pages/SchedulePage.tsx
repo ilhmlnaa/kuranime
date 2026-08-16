@@ -33,7 +33,7 @@ export default function SchedulePage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
-          <span className="w-1.5 h-7 bg-gradient-to-b from-[#38bdf8] to-[#0284c7] rounded-full inline-block" />
+          <span className="w-1.5 h-7 bg-linear-to-b from-[#38bdf8] to-[#0284c7] rounded-full inline-block" />
           Jadwal Tayang
         </h1>
         <p className="text-slate-500 mt-1.5 text-sm">Jadwal rilis episode per hari</p>
@@ -47,7 +47,7 @@ export default function SchedulePage() {
             onClick={() => setActiveDay(day.key)}
             className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
               activeDay === day.key
-                ? 'bg-gradient-to-r from-[#00a3ff]/15 to-[#0284c7]/10 border-[#00a3ff]/40 text-[#38bdf8]'
+                ? 'bg-linear-to-r from-[#00a3ff]/15 to-[#0284c7]/10 border-[#00a3ff]/40 text-[#38bdf8]'
                 : 'bg-[#121620] border-white/10 text-slate-400 hover:text-slate-200 hover:bg-[#1e2635]'
             } ${day.key === TODAY_KEY ? 'ring-1 ring-[#00a3ff]/30' : ''}`}>
             {day.label}
