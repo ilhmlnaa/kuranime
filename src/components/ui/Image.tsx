@@ -4,11 +4,11 @@ export interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   containerClassName?: string;
 }
 
-export const Image: React.FC<ImageProps> = ({ className = '', containerClassName = '', alt, ...props }) => {
+export const Image: React.FC<ImageProps> = ({ className = '', containerClassName = '', alt, style, ...props }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div className={`relative overflow-hidden bg-[#111827] ${containerClassName} ${className}`}>
+    <div className={`relative overflow-hidden ${containerClassName}`} style={style}>
       <img
         alt={alt ?? ''}
         className={`w-full h-full transition-opacity duration-500 ${
@@ -17,9 +17,8 @@ export const Image: React.FC<ImageProps> = ({ className = '', containerClassName
         onLoad={() => setIsLoaded(true)}
         {...props}
       />
-      {/* Skeleton / shimmer effect while loading */}
       {!isLoaded && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-tr from-slate-800/40 to-slate-700/40" />
+        <div className="absolute inset-0 animate-pulse bg-[#111827]" />
       )}
     </div>
   );

@@ -44,6 +44,16 @@ export default function AnimeDetailPage() {
 
   return (
     <div className="pb-16">
+      {/* Top Breadcrumbs - Before Banner */}
+      <div className="px-4 md:px-8 max-w-7xl mx-auto pt-4 pb-2">
+        <Breadcrumbs
+          items={[
+            { label: 'Anime', to: '/anime' },
+            { label: anime.title },
+          ]}
+        />
+      </div>
+
       {/* Banner */}
       <div className="relative w-full h-[38vh] md:h-[48vh]">
         <div className="absolute inset-0 bg-gradient-to-t from-[#0b0e14] via-[#0b0e14]/80 to-transparent z-10" />
@@ -58,15 +68,6 @@ export default function AnimeDetailPage() {
       </div>
 
       <div className="px-4 md:px-8 max-w-7xl mx-auto -mt-32 relative z-20">
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          items={[
-            { label: 'Anime', to: '/anime' },
-            { label: anime.title },
-          ]}
-          className="mb-5 mt-2"
-        />
-
         <div className="flex flex-col md:flex-row gap-8">
           {/* Poster */}
           <div className="flex-shrink-0 mx-auto md:mx-0 w-[180px] md:w-[220px] flex flex-col gap-4">

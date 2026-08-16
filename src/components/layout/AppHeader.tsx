@@ -69,7 +69,7 @@ export function AppHeader() {
       animate={{ y: visible ? 0 : '-100%' }}
       transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
     >
-      <div className="flex h-16 items-center gap-4 border-b border-[#00a3ff]/10 bg-[#070a10]/90 px-6 backdrop-blur-md">
+      <div className="flex h-16 items-center gap-4 border-b border-[#00a3ff]/20 bg-gradient-to-r from-[#070a10] via-[#091120] to-[#070a10] px-6 backdrop-blur-md shadow-[0_4px_20px_rgba(0,163,255,0.05)]">
         {/* Search bar */}
         <form onSubmit={handleSearch} className="flex-1 max-w-xl">
           <div className={`relative flex items-center transition-all duration-200 ${focused ? 'ring-1 ring-[#00a3ff]/50' : ''} rounded-xl overflow-hidden bg-[#111827] border border-white/[0.07] hover:border-[#00a3ff]/25`}>

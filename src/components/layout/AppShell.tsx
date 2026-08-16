@@ -72,7 +72,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   return (
     <div className={`min-h-screen bg-[#070a10] text-slate-100 antialiased ${className}`}>
       {/* Mobile Top Header */}
-      <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#00a3ff]/10 bg-gradient-to-r from-[#0d1117] to-[#0b0e14] px-4 backdrop-blur-sm md:hidden">
+      <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#00a3ff]/20 bg-gradient-to-r from-[#0d1117] via-[#091120] to-[#0b0e14] px-4 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,163,255,0.06)] md:hidden">
         <button
           type="button"
           onClick={() => setMobileMenuOpen(true)}
