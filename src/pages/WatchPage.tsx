@@ -8,12 +8,31 @@ import { WatchPageSkeleton } from '../components/ui/skeletons';
 import { ErrorState } from '../components/ui/ErrorState';
 import type { DownloadQuality } from '../types';
 
+/**
+ * Derive a clean anime title from episode's full title string.
+ * Input example: "Watashi ga Koibito ... (Episode 01) Subtitle Indonesia"
+ * Extracts the main title before the (Episode XX) part.
+ */
+function cleanEpisodeTitle(rawTitle: string): string {
+  // Try to extract content before " (Episode ..."
+  const match = rawTitle.match(/^(.+?)\s*\(.*[Ee]pisode.*\)/i);
+  if (match?.[1]) return match[1].trim();
+  // Fallback: strip everything after last " (" and "Subtitle Indonesia"
+  return rawTitle
+    .replace(/\s*\(Episode\s+\d+.*$/i, '')
+    .replace(/\s*Subtitle Indonesia.*$/i, '')
+    .trim() || rawTitle;
+}
+
 export default function WatchPage() {
   const { id, ep } = useParams<{ id: string; ep: string }>();
   const [selectedServer, setSelectedServer] = useState<string | null>(null);
 
-  const { data: anime } = useAnimeDetail(id);
   const { data: episodeData, isLoading: isEpLoading, error } = useEpisode(id, ep);
+  const episodeSlug = episodeData?.slug;
+  const { data: anime } = useAnimeDetail(id, episodeSlug, {
+    enabled: Boolean(id && episodeSlug),
+  });
 
   const servers = (episodeData?.servers ?? []) as Array<{ id?: string; name?: string; label?: string }>;
   const defaultStreamUrl = episodeData?.streamUrl as string | undefined;
@@ -32,18 +51,21 @@ export default function WatchPage() {
 
   const addHistory = useHistoryStore((s) => s.add);
 
-  // Save to history (depend strictly on episodeData to avoid empty history if anime detail fails)
+  // Save immediately from episode data, then enrich the same entry when detail arrives.
   useEffect(() => {
-    if (episodeData) {
-      addHistory({
-        animeId: id ?? episodeData.animeId,
-        slug: episodeData.slug ?? anime?.slug ?? '',
-        title: episodeData.animeTitle || anime?.title || 'Unknown Anime',
-        animeTitle: episodeData.animeTitle || anime?.title || 'Unknown Anime',
-        episode: episodeData.episode || ep || 1,
-        cover: (anime?.cover as string | undefined) ?? '',
-      });
-    }
+    if (!episodeData) return;
+
+    const fallbackTitle = cleanEpisodeTitle(episodeData.title);
+    const resolvedTitle = anime?.title || fallbackTitle;
+
+    addHistory({
+      animeId: id ?? episodeData.animeId,
+      slug: episodeData.slug ?? anime?.slug ?? '',
+      title: resolvedTitle,
+      animeTitle: resolvedTitle,
+      episode: episodeData.episode || ep || 1,
+      cover: (anime?.cover as string | undefined) ?? '',
+    });
   }, [episodeData, anime, id, ep, addHistory]);
 
   if (isEpLoading) return <WatchPageSkeleton />;
@@ -66,6 +88,8 @@ export default function WatchPage() {
 
   // Slug for back-to-detail link: episodeData.slug > anime.slug > id as fallback
   const animeSlug = episodeData.slug ?? anime?.slug ?? '';
+  const displayTitle = anime?.title || cleanEpisodeTitle(episodeData.title);
+  const genres = (anime?.genres ?? []) as Array<string | { name?: string }>;
   const backToDetailUrl = animeSlug ? `/anime/${id}/${animeSlug}` : `/anime/${id}`;
 
   const videoUrl = activeServer === 'kuramadrive' && defaultStreamUrl ? defaultStreamUrl : streamData?.videoUrl as string | undefined;
@@ -83,7 +107,7 @@ export default function WatchPage() {
             key={`${activeServer}-${videoUrl ?? iframeUrl ?? 'none'}`}
             videoUrl={isKuramaDrive ? videoUrl : undefined}
             iframeUrl={!isKuramaDrive ? (iframeUrl ?? videoUrl) : undefined}
-            title={anime ? `${anime.title} · Episode ${ep}` : `Episode ${ep}`}
+            title={`${displayTitle} · Episode ${ep}`}
             poster={anime?.cover as string | undefined}
             activeServerId={activeServer}
             isLoading={isStreamLoading}
@@ -91,13 +115,32 @@ export default function WatchPage() {
 
           {/* Episode Info & Navigation */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#111620] p-4 sm:p-5 rounded-2xl border border-[#00a3ff]/10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]">
-            <div>
-              <Link to={backToDetailUrl} className="text-[#00a3ff] hover:underline font-semibold text-sm drop-shadow-sm">
-                {episodeData.animeTitle || anime?.title || 'Anime Details'}
-              </Link>
-              <h1 className="text-white text-xl sm:text-2xl font-bold mt-1 tracking-tight">
-                {episodeData.title || `Episode ${ep}`}
-              </h1>
+            <div className="flex min-w-0 items-center gap-3">
+              {anime?.cover ? (
+                <img
+                  src={anime.cover}
+                  alt=""
+                  className="hidden h-16 w-12 shrink-0 rounded-lg object-cover ring-1 ring-white/10 sm:block"
+                />
+              ) : null}
+              <div className="min-w-0">
+                <Link to={backToDetailUrl} className="line-clamp-1 text-lg font-bold text-white transition-colors hover:text-[#00a3ff] sm:text-xl">
+                  {displayTitle}
+                </Link>
+                <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                  <span className="rounded-md bg-[#00a3ff]/12 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[#38bdf8]">
+                    Episode {episodeData.episode}
+                  </span>
+                  {genres.slice(0, 3).map((genre, index) => {
+                    const name = typeof genre === 'string' ? genre : genre.name;
+                    return name ? (
+                      <span key={`${name}-${index}`} className="text-[11px] font-medium text-slate-500">
+                        {name.replace(/,$/, '')}
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center gap-2 flex-shrink-0">
