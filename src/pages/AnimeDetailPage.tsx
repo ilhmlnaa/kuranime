@@ -72,7 +72,7 @@ export default function AnimeDetailPage() {
         )}
       </div>
 
-      <div className="px-4 md:px-8 max-w-[1920px] mx-auto pt-28 sm:pt-40 md:pt-56 relative z-20">
+      <div className="px-4 md:px-8 max-w-[1920px] mx-auto pt-36 sm:pt-48 md:pt-64 relative z-20">
         <div className="grid grid-cols-[120px_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)] gap-4 sm:gap-6 md:gap-8 items-start">
           
           {/* Left: Poster & Actions */}
