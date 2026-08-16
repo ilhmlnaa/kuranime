@@ -21,27 +21,19 @@ export const Brand: React.FC<BrandProps> = ({
     lg: 'text-2xl gap-3',
   };
 
-  const iconSizes = {
-    sm: 'w-6 h-6',
-    md: 'w-7 h-7',
-    lg: 'w-8 h-8',
+  const logoSizes = {
+    sm: 'h-7 w-7',
+    md: 'h-8 w-8',
+    lg: 'h-9 w-9',
   };
 
   const content = (
     <>
-      <div className={`relative flex items-center justify-center rounded-lg bg-gradient-to-br from-[#38bdf8] via-[#00a3ff] to-[#0284c7] p-1.5 shadow-md shadow-[#00a3ff]/20 ${iconSizes[size]}`}>
-        <svg
-          className="w-full h-full text-slate-950 stroke-[2.5]"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <polygon points="6 3 20 12 6 21 6 3" fill="currentColor" className="opacity-90" />
-        </svg>
-      </div>
+      <img
+        src="/logo.png"
+        alt="Kuranime Logo"
+        className={`object-contain flex-shrink-0 transition-transform duration-300 group-hover:scale-105 ${logoSizes[size]}`}
+      />
       <div className="flex items-baseline font-bold tracking-tight">
         <span className="text-slate-100 font-extrabold">KURA</span>
         <span className="text-[#00a3ff]">NIME</span>
@@ -50,7 +42,7 @@ export const Brand: React.FC<BrandProps> = ({
     </>
   );
 
-  const baseClasses = `inline-flex items-center font-sans focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a3ff] rounded-md transition-opacity hover:opacity-90 active:scale-[0.98] ${sizeClasses[size]} ${className}`;
+  const baseClasses = `group inline-flex items-center font-sans focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00a3ff] rounded-md transition-opacity hover:opacity-90 active:scale-[0.98] ${sizeClasses[size]} ${className}`;
 
   if (asDiv) {
     return <div className={baseClasses}>{content}</div>;
