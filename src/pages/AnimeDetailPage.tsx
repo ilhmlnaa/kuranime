@@ -115,7 +115,7 @@ export default function AnimeDetailPage() {
 
           {/* Right: Info & Metadata */}
           <div className="flex flex-col gap-3 sm:gap-4">
-            <h1 className="text-lg sm:text-2xl md:text-4xl font-bold text-white leading-tight">
+            <h1 className="line-clamp-4 text-lg font-bold leading-tight text-white sm:line-clamp-none sm:text-2xl md:text-4xl" title={anime.title}>
               {anime.title}
             </h1>
 
@@ -138,7 +138,7 @@ export default function AnimeDetailPage() {
                 {genresList.map((g, i) => {
                   const name = typeof g === 'string' ? g.replace(/,$/, '') : g.name.replace(/,$/, '');
                   return (
-                    <span key={i} className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[#121620] border border-white/10 rounded-lg text-[11px] sm:text-xs text-slate-400 font-medium">
+                    <span key={i} className={`${i >= 4 ? 'hidden sm:inline-flex' : 'inline-flex'} rounded-lg border border-white/10 bg-[#121620] px-2 py-0.5 text-[11px] font-medium text-slate-400 sm:px-2.5 sm:py-1 sm:text-xs`}>
                       {name}
                     </span>
                   );
@@ -146,29 +146,6 @@ export default function AnimeDetailPage() {
               </div>
             )}
 
-            {/* Mobile Actions (Under Title/Genres for compact screen) */}
-            <div className="flex sm:hidden items-center gap-2 pt-1">
-              {firstEpisode && (
-                <Link
-                  to={`/anime/${anime.id}/episode/${firstEpisode.episode}`}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold bg-[#00a3ff] text-white text-xs shadow-[0_0_12px_rgba(0,163,255,0.3)]"
-                >
-                  <Play className="w-3.5 h-3.5 fill-current" />
-                  Nonton Ep 1
-                </Link>
-              )}
-              <button
-                onClick={handleWatchlistToggle}
-                className={`p-2.5 rounded-xl font-semibold transition-all text-xs border ${
-                  isInWatchlist
-                    ? 'bg-[#121620] border-[#00a3ff]/40 text-[#00a3ff]'
-                    : 'bg-[#121620] border-white/10 text-slate-300'
-                }`}
-                title={isInWatchlist ? 'Tersimpan' : 'Simpan Anime'}
-              >
-                {isInWatchlist ? <BookmarkCheck className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
-              </button>
-            </div>
 
             {/* Synopsis - Desktop & Tablet Inline */}
             {anime.synopsis && (
@@ -199,10 +176,36 @@ export default function AnimeDetailPage() {
               </div>
             )}
           </div>
+
+          {/* Mobile Actions: span both columns to avoid an empty area below the poster */}
+          <div className="col-span-2 flex items-center gap-2 sm:hidden">
+            {firstEpisode && (
+              <Link
+                to={`/anime/${anime.id}/episode/${firstEpisode.episode}`}
+                className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#00a3ff] px-4 py-2.5 text-xs font-bold text-white shadow-[0_6px_20px_rgba(0,163,255,0.28)] active:scale-[0.98]"
+              >
+                <Play className="h-3.5 w-3.5 fill-current" />
+                Nonton Episode 1
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={handleWatchlistToggle}
+              className={`flex min-h-11 min-w-11 items-center justify-center rounded-xl border p-2.5 text-xs font-semibold transition-all ${
+                isInWatchlist
+                  ? 'border-[#00a3ff]/40 bg-[#121620] text-[#00a3ff]'
+                  : 'border-white/10 bg-[#121620] text-slate-300'
+              }`}
+              aria-label={isInWatchlist ? 'Hapus dari watchlist' : 'Simpan ke watchlist'}
+              title={isInWatchlist ? 'Tersimpan' : 'Simpan Anime'}
+            >
+              {isInWatchlist ? <BookmarkCheck className="h-4 w-4" /> : <BookmarkPlus className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Full-width Synopsis & Info Grid (below top split) */}
-        <div className="flex flex-col gap-4 mt-6 sm:hidden">
+        <div className="mt-4 flex flex-col gap-4 sm:hidden">
           {anime.synopsis && (
             <div className="bg-[#111620]/60 border border-white/5 rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-2">
