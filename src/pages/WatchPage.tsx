@@ -99,22 +99,21 @@ export default function WatchPage() {
 
   return (
     <div className="pb-16 relative">
-      {/* Netflix-style Cinematic Banner Backdrop */}
-      <div className="absolute top-0 left-0 right-0 h-[45vh] md:h-[55vh] min-h-[350px] w-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/65 to-transparent z-10" />
-        <div className="absolute inset-0 bg-linear-to-r from-[#070a10]/80 via-[#070a10]/40 to-transparent z-10" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_30%,#070a10_90%)] z-10" />
+      {/* Compact backdrop: keeps the watch interface focused on the player */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[36vh] min-h-[280px] overflow-hidden md:h-[42vh]">
+        <div className="absolute inset-0 z-10 bg-linear-to-t from-[#070a10] via-[#070a10]/85 to-[#070a10]/20" />
+        <div className="absolute inset-0 z-10 bg-linear-to-r from-[#070a10]/75 via-transparent to-[#070a10]/35" />
         {anime?.cover && (
           <Image
             src={anime.cover as string}
             alt=""
             containerClassName="absolute inset-0 h-full w-full"
-            className="h-full w-full scale-105 object-cover object-top opacity-60 md:opacity-70"
+            className="h-full w-full object-cover object-center opacity-30 blur-[2px] md:opacity-35"
           />
         )}
       </div>
 
-      <div className="relative z-10 flex flex-col gap-6 px-4 md:px-8 py-6 max-w-[1920px] mx-auto mt-2 md:mt-6">
+      <div className="relative z-10 mx-auto flex max-w-[1920px] flex-col gap-6 px-4 py-6 md:px-8">
         {/* Breadcrumbs */}
         <Breadcrumbs
           items={[
