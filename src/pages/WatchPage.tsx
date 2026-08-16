@@ -164,41 +164,75 @@ export default function WatchPage() {
           </div>
         </div>
 
-        {/* Right Column: Server Selector */}
-        <div className="lg:col-span-1 bg-[#111620] border border-white/5 rounded-2xl p-5 shadow-lg sticky top-24">
-          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/5">
-            <Radio className="w-4 h-4 text-[#00a3ff]" />
-            <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Server Streaming</h3>
-          </div>
-          {servers.length > 0 || defaultStreamUrl ? (
-            <div className="flex flex-col gap-2.5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-              {defaultStreamUrl && !servers.some(s => s.id === 'kuramadrive') && (
-                 <ServerBtn 
-                   isActive={activeServer === 'kuramadrive'} 
-                   onClick={() => setSelectedServer('kuramadrive')}
-                   label="Kuranime (Default)"
-                 />
-              )}
-              {servers.map((server) => {
-                const serverId = server.id ?? '';
-                const rawLabel = server.label ?? server.name ?? serverId;
-                const serverLabel = rawLabel.replace(/^Kuramadrive\s*s1.*$/i, 'Kuranime');
-                return (
-                  <ServerBtn 
-                    key={serverId}
-                    isActive={activeServer === serverId}
-                    onClick={() => setSelectedServer(serverId)}
-                    label={serverLabel}
-                  />
-                );
-              })}
+        {/* Right Column: Server Selector + Episode List */}
+        <aside className="flex flex-col gap-6 lg:col-span-1 lg:sticky lg:top-24">
+          <div className="rounded-2xl border border-white/5 bg-[#111620] p-5 shadow-lg">
+            <div className="mb-4 flex items-center gap-2 border-b border-white/5 pb-3">
+              <Radio className="h-4 w-4 text-[#00a3ff]" />
+              <h3 className="text-sm font-semibold tracking-wide text-slate-200">Server Streaming</h3>
             </div>
-          ) : (
-            <div className="py-8 text-center text-slate-500 text-sm bg-black/20 rounded-xl border border-white/5">
-              Tidak ada server alternatif.
+            {servers.length > 0 || defaultStreamUrl ? (
+              <div className="custom-scrollbar flex max-h-[400px] flex-col gap-2.5 overflow-y-auto pr-2">
+                {defaultStreamUrl && !servers.some(s => s.id === 'kuramadrive') && (
+                  <ServerBtn
+                    isActive={activeServer === 'kuramadrive'}
+                    onClick={() => setSelectedServer('kuramadrive')}
+                    label="Kuranime (Default)"
+                  />
+                )}
+                {servers.map((server) => {
+                  const serverId = server.id ?? '';
+                  const rawLabel = server.label ?? server.name ?? serverId;
+                  const serverLabel = rawLabel.replace(/^Kuramadrive\s*s1.*$/i, 'Kuranime');
+                  return (
+                    <ServerBtn
+                      key={serverId}
+                      isActive={activeServer === serverId}
+                      onClick={() => setSelectedServer(serverId)}
+                      label={serverLabel}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-white/5 bg-black/20 py-8 text-center text-sm text-slate-500">
+                Tidak ada server alternatif.
+              </div>
+            )}
+          </div>
+
+          {sortedEpisodes.length > 0 && (
+            <div className="rounded-2xl border border-white/5 bg-[#111620] p-5 shadow-lg">
+              <div className="mb-4 flex items-center gap-2 border-b border-white/5 pb-3">
+                <List className="h-4 w-4 text-[#00a3ff]" />
+                <h3 className="text-sm font-semibold tracking-wide text-slate-200">Semua Episode</h3>
+                <span className="ml-auto rounded-md bg-white/5 px-2 py-0.5 text-xs font-medium text-slate-500">
+                  {sortedEpisodes.length} Ep
+                </span>
+              </div>
+
+              <div className="custom-scrollbar grid max-h-[280px] grid-cols-4 gap-2 overflow-y-auto pr-2 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5">
+                {sortedEpisodes.map((episodeItem) => {
+                  const isCurrent = String(episodeItem.episode) === String(ep);
+                  return (
+                    <Link
+                      key={episodeItem.episode}
+                      to={`/anime/${id}/episode/${episodeItem.episode}`}
+                      aria-current={isCurrent ? 'page' : undefined}
+                      className={`flex min-h-10 items-center justify-center rounded-xl border px-1 py-2 transition-all ${
+                        isCurrent
+                          ? 'pointer-events-none border-[#00a3ff]/50 bg-[#00a3ff]/15 text-[#00a3ff] shadow-[0_0_12px_rgba(0,163,255,0.1)]'
+                          : 'border-white/[0.04] bg-[#0b0e14]/80 text-slate-400 hover:border-white/10 hover:bg-[#1a1f2e] hover:text-slate-200'
+                      }`}
+                    >
+                      <span className="text-sm font-bold">{episodeItem.episode}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           )}
-        </div>
+        </aside>
       </div>
 
       {/* Bottom Grid: All Episodes & Downloads */}
@@ -243,36 +277,7 @@ export default function WatchPage() {
             </div>
           )}
         </div>
-        
-        {/* Right: All Episodes List (Span 1) */}
-        {sortedEpisodes.length > 0 && (
-          <div className="bg-[#111620] border border-white/5 rounded-2xl p-5 shadow-lg lg:col-span-1">
-            <div className="flex items-center gap-2 mb-5 pb-4 border-b border-white/5">
-              <List className="w-4 h-4 text-[#00a3ff]" />
-              <h3 className="font-semibold text-slate-200 text-sm tracking-wide">Semua Episode</h3>
-              <span className="ml-auto text-xs font-medium text-slate-500 bg-white/5 px-2 py-0.5 rounded-md">{sortedEpisodes.length} Ep</span>
-            </div>
-            
-            <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-5 gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-              {sortedEpisodes.map((episodeItem) => {
-                const isCurrent = String(episodeItem.episode) === String(ep);
-                return (
-                  <Link
-                    key={episodeItem.episode}
-                    to={`/anime/${id}/episode/${episodeItem.episode}`}
-                    className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all border ${
-                      isCurrent 
-                        ? 'bg-[#00a3ff]/15 border-[#00a3ff]/50 text-[#00a3ff] shadow-[0_0_12px_rgba(0,163,255,0.1)] pointer-events-none' 
-                        : 'bg-[#0b0e14]/80 backdrop-blur-sm border-white/[0.04] text-slate-400 hover:bg-[#1a1f2e] hover:border-white/10 hover:text-slate-200'
-                    }`}
-                  >
-                    <span className="text-base font-bold">{episodeItem.episode}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
+
       </div>
     </div>
     </div>
