@@ -43,91 +43,98 @@ export default function AnimeDetailPage() {
   const firstEpisode = episodesList.length > 0 ? episodesList[episodesList.length - 1] : undefined;
 
   return (
-    <div className="pb-16">
+    <div className="pb-16 relative">
       {/* Top Breadcrumbs - Before Banner */}
-      <div className="px-4 md:px-8 max-w-[1920px] mx-auto pt-4 pb-2">
+      <div className="px-4 md:px-8 max-w-[1920px] mx-auto pt-4 pb-2 relative z-20">
         <Breadcrumbs
           items={[
             { label: 'Anime', to: '/anime' },
             { label: anime.title },
           ]}
+          className="backdrop-blur-sm bg-black/20 p-2 rounded-xl inline-flex self-start border border-white/5"
         />
       </div>
 
       {/* Banner */}
-      <div className="relative w-full h-[38vh] md:h-[48vh]">
-        <div className="absolute inset-0 bg-linear-to-t from-[#0b0e14] via-[#0b0e14]/80 to-transparent z-10" />
-        <div className="absolute inset-0 bg-linear-to-r from-[#0b0e14] via-[#0b0e14]/40 to-transparent z-10" />
+      <div className="absolute top-0 left-0 right-0 h-[45vh] md:h-[55vh] w-full pointer-events-none z-0">
+        <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/80 to-transparent z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#070a10] via-[#070a10]/40 to-transparent z-10" />
         {coverSrc && (
           <Image
             src={coverSrc}
-            alt={anime.title}
-            className="absolute inset-0 w-full h-full object-cover opacity-50"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover opacity-30 blur-[4px]"
           />
         )}
       </div>
 
-      <div className="px-4 md:px-8 max-w-[1920px] mx-auto -mt-32 relative z-20">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Poster */}
-          <div className="flex-shrink-0 mx-auto md:mx-0 w-[180px] md:w-[220px] flex flex-col gap-4">
-            <div className="rounded-xl overflow-hidden shadow-2xl border border-white/10 aspect-[3/4]">
+      <div className="px-4 md:px-8 max-w-[1920px] mx-auto mt-4 md:mt-12 relative z-20">
+        <div className="grid grid-cols-[120px_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)] md:grid-cols-[220px_minmax(0,1fr)] gap-4 sm:gap-6 md:gap-8 items-start">
+          
+          {/* Left: Poster & Actions */}
+          <div className="flex flex-col gap-3 sm:gap-4 w-full">
+            <div className="rounded-2xl overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.5)] border border-white/10 aspect-[3/4] relative bg-[#111620]">
               {coverSrc && (
                 <Image src={coverSrc} alt={anime.title} className="w-full h-full object-cover" />
               )}
             </div>
 
-            {firstEpisode && (
-              <Link
-                to={`/anime/${anime.id}/episode/${firstEpisode.episode}`}
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold bg-[#00a3ff] text-white hover:bg-[#00a3ff]/90 transition-colors shadow-[0_0_16px_rgba(0,163,255,0.3)] text-sm"
-              >
-                <Play className="w-4 h-4 fill-current" />
-                Nonton Sekarang
-              </Link>
-            )}
-
-            <button
-              onClick={handleWatchlistToggle}
-              className={`flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold transition-colors text-sm border ${
-                isInWatchlist
-                  ? 'bg-[#121620] border-[#00a3ff]/40 text-[#00a3ff] hover:bg-[#00a3ff]/10'
-                  : 'bg-[#121620] border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
-              }`}
-            >
-              {isInWatchlist ? (
-                <BookmarkCheck className="w-4 h-4" />
-              ) : (
-                <BookmarkPlus className="w-4 h-4" />
+            {/* Desktop / Tablet Buttons (Under Poster) */}
+            <div className="hidden sm:flex flex-col gap-2.5">
+              {firstEpisode && (
+                <Link
+                  to={`/anime/${anime.id}/episode/${firstEpisode.episode}`}
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold bg-[#00a3ff] text-white hover:bg-[#00a3ff]/90 transition-all shadow-[0_0_20px_rgba(0,163,255,0.3)] text-sm active:scale-95"
+                >
+                  <Play className="w-4 h-4 fill-current" />
+                  Nonton Ep 1
+                </Link>
               )}
-              {isInWatchlist ? 'Tersimpan' : 'Simpan'}
-            </button>
+
+              <button
+                onClick={handleWatchlistToggle}
+                className={`flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-semibold transition-all text-xs border ${
+                  isInWatchlist
+                    ? 'bg-[#121620] border-[#00a3ff]/40 text-[#00a3ff] hover:bg-[#00a3ff]/10'
+                    : 'bg-[#121620] border-white/10 text-slate-300 hover:border-white/20 hover:text-white'
+                }`}
+              >
+                {isInWatchlist ? (
+                  <BookmarkCheck className="w-4 h-4" />
+                ) : (
+                  <BookmarkPlus className="w-4 h-4" />
+                )}
+                {isInWatchlist ? 'Tersimpan' : 'Simpan Anime'}
+              </button>
+            </div>
           </div>
 
-          {/* Info */}
-          <div className="flex-grow flex flex-col gap-4 md:pt-14">
-            <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight">{anime.title}</h1>
+          {/* Right: Info & Metadata */}
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <h1 className="text-lg sm:text-2xl md:text-4xl font-bold text-white leading-tight">
+              {anime.title}
+            </h1>
 
-            <div className="flex flex-wrap items-center gap-3 text-sm">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
               {status && (
-                <span className="px-3 py-1 bg-[#00a3ff]/15 text-[#00a3ff] rounded-full border border-[#00a3ff]/30 font-medium text-xs">
+                <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-[#00a3ff]/15 text-[#00a3ff] rounded-full border border-[#00a3ff]/30 font-semibold text-[11px] sm:text-xs">
                   {status}
                 </span>
               )}
               {rating && (
-                <div className="flex items-center gap-1 text-slate-400">
+                <div className="flex items-center gap-1 text-slate-400 bg-white/5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/5">
                   <Star className="w-3.5 h-3.5 text-yellow-400 fill-current" />
-                  <span className="font-medium">{rating}</span>
+                  <span className="font-semibold text-xs text-slate-200">{rating}</span>
                 </div>
               )}
             </div>
 
             {genresList.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {genresList.map((g, i) => {
                   const name = typeof g === 'string' ? g.replace(/,$/, '') : g.name.replace(/,$/, '');
                   return (
-                    <span key={i} className="px-2.5 py-1 bg-[#121620] border border-white/10 rounded-lg text-xs text-slate-400">
+                    <span key={i} className="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-[#121620] border border-white/10 rounded-lg text-[11px] sm:text-xs text-slate-400 font-medium">
                       {name}
                     </span>
                   );
@@ -135,34 +142,89 @@ export default function AnimeDetailPage() {
               </div>
             )}
 
+            {/* Mobile Actions (Under Title/Genres for compact screen) */}
+            <div className="flex sm:hidden items-center gap-2 pt-1">
+              {firstEpisode && (
+                <Link
+                  to={`/anime/${anime.id}/episode/${firstEpisode.episode}`}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold bg-[#00a3ff] text-white text-xs shadow-[0_0_12px_rgba(0,163,255,0.3)]"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  Nonton Ep 1
+                </Link>
+              )}
+              <button
+                onClick={handleWatchlistToggle}
+                className={`p-2.5 rounded-xl font-semibold transition-all text-xs border ${
+                  isInWatchlist
+                    ? 'bg-[#121620] border-[#00a3ff]/40 text-[#00a3ff]'
+                    : 'bg-[#121620] border-white/10 text-slate-300'
+                }`}
+                title={isInWatchlist ? 'Tersimpan' : 'Simpan Anime'}
+              >
+                {isInWatchlist ? <BookmarkCheck className="w-4 h-4" /> : <BookmarkPlus className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* Synopsis - Desktop & Tablet Inline */}
             {anime.synopsis && (
-              <div>
-                <div className="flex items-center gap-2 mb-2">
+              <div className="hidden sm:block mt-2">
+                <div className="flex items-center gap-2 mb-1.5">
                   <Info className="w-4 h-4 text-[#00a3ff]" />
-                  <h3 className="font-semibold text-slate-200 text-sm">Sinopsis</h3>
+                  <h3 className="font-semibold text-slate-200 text-xs sm:text-sm">Sinopsis</h3>
                 </div>
-                <p className="text-slate-400 leading-relaxed text-sm line-clamp-6 whitespace-pre-wrap">
+                <p className="text-slate-400 leading-relaxed text-xs sm:text-sm line-clamp-6 whitespace-pre-wrap">
                   {anime.synopsis as string}
                 </p>
               </div>
             )}
 
-            {/* Info Grid */}
+            {/* Info Grid - Desktop & Tablet Inline */}
             {anime.info && typeof anime.info === 'object' && !Array.isArray(anime.info) && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2">
-                {Object.entries(anime.info as Record<string, unknown>).slice(0, 9).map(([key, val]) => (
-                  <div key={key} className="bg-[#121620] border border-white/10 rounded-xl p-3">
-                    <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+              <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-2.5 mt-2">
+                {Object.entries(anime.info as Record<string, unknown>).slice(0, 6).map(([key, val]) => (
+                  <div key={key} className="bg-[#121620]/80 backdrop-blur-sm border border-white/5 rounded-xl p-2.5">
+                    <div className="text-[9px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
                       {key}
                     </div>
-                    <div className="text-slate-300 text-sm font-medium leading-snug">
-                      {String(val ?? '-').replace(/\s+/g, ' ').trim().slice(0, 60)}
+                    <div className="text-slate-300 text-xs font-medium leading-snug truncate">
+                      {String(val ?? '-').replace(/\s+/g, ' ').trim()}
                     </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
+        </div>
+
+        {/* Mobile Full-width Synopsis & Info Grid (below top split) */}
+        <div className="flex flex-col gap-4 mt-6 sm:hidden">
+          {anime.synopsis && (
+            <div className="bg-[#111620]/60 border border-white/5 rounded-2xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Info className="w-4 h-4 text-[#00a3ff]" />
+                <h3 className="font-semibold text-slate-200 text-xs">Sinopsis</h3>
+              </div>
+              <p className="text-slate-400 leading-relaxed text-xs line-clamp-6 whitespace-pre-wrap">
+                {anime.synopsis as string}
+              </p>
+            </div>
+          )}
+
+          {anime.info && typeof anime.info === 'object' && !Array.isArray(anime.info) && (
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(anime.info as Record<string, unknown>).slice(0, 6).map(([key, val]) => (
+                <div key={key} className="bg-[#111620]/60 border border-white/5 rounded-xl p-2.5">
+                  <div className="text-[9px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
+                    {key}
+                  </div>
+                  <div className="text-slate-300 text-xs font-medium leading-snug truncate">
+                    {String(val ?? '-').replace(/\s+/g, ' ').trim()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Episode List */}
