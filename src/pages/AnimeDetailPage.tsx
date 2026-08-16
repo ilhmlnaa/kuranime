@@ -45,7 +45,7 @@ export default function AnimeDetailPage() {
   return (
     <div className="pb-16">
       {/* Top Breadcrumbs - Before Banner */}
-      <div className="px-4 md:px-8 max-w-7xl mx-auto pt-4 pb-2">
+      <div className="px-4 md:px-8 max-w-[1920px] mx-auto pt-4 pb-2">
         <Breadcrumbs
           items={[
             { label: 'Anime', to: '/anime' },
@@ -67,7 +67,7 @@ export default function AnimeDetailPage() {
         )}
       </div>
 
-      <div className="px-4 md:px-8 max-w-7xl mx-auto -mt-32 relative z-20">
+      <div className="px-4 md:px-8 max-w-[1920px] mx-auto -mt-32 relative z-20">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Poster */}
           <div className="flex-shrink-0 mx-auto md:mx-0 w-[180px] md:w-[220px] flex flex-col gap-4">

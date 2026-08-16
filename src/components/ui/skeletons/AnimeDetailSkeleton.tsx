@@ -1,10 +1,10 @@
 export const AnimeDetailSkeleton = () => {
   return (
-    <div className="space-y-8 animate-pulse">
+    <div className="space-y-8 animate-pulse pb-16">
       {/* Banner */}
-      <div className="w-full h-[38vh] bg-[#111827] ring-1 ring-white/[0.04]" />
+      <div className="w-full h-[38vh] md:h-[48vh] bg-[#111827] ring-1 ring-white/[0.04]" />
 
-      <div className="px-4 md:px-8 -mt-20 relative z-10 space-y-8">
+      <div className="px-4 md:px-8 max-w-[1920px] mx-auto -mt-32 relative z-10 space-y-8">
         {/* Poster & Info */}
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-[180px] aspect-[3/4] flex-shrink-0 bg-[#111827] rounded-2xl ring-1 ring-white/[0.04]" />
