@@ -66,7 +66,8 @@ export default function AnimeDetailPage() {
           <Image
             src={coverSrc}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover object-top opacity-65 md:opacity-75 scale-105 transition-transform duration-1000"
+            containerClassName="absolute inset-0 h-full w-full"
+            className="h-full w-full scale-105 object-cover object-top opacity-65 transition-transform duration-1000 md:opacity-75"
           />
         )}
       </div>

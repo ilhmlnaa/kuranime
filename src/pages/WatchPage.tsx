@@ -108,7 +108,8 @@ export default function WatchPage() {
           <Image
             src={anime.cover as string}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover object-top opacity-60 md:opacity-70 scale-105"
+            containerClassName="absolute inset-0 h-full w-full"
+            className="h-full w-full scale-105 object-cover object-top opacity-60 md:opacity-70"
           />
         )}
       </div>
