@@ -5,15 +5,6 @@ export interface ProxiedVideoSource {
   type: 'video' | 'hls'
 }
 
-/**
- * Membungkus URL stream dengan ZenProxy.
- *
- * Endpoint ZenProxy:
- * - Direct video: {PROXY_BASE_URL}/video?url={encodedUrl}
- * - HLS stream:   {PROXY_BASE_URL}/hls?url={encodedUrl}
- *
- * Deteksi hanya berdasarkan format media, tidak berdasarkan domain provider.
- */
 export function getProxiedVideoSource(
   rawUrl: string | undefined | null,
 ): ProxiedVideoSource | null {
