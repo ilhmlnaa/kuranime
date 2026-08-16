@@ -98,17 +98,32 @@ export default function WatchPage() {
   const iframeUrl = streamData?.iframeUrl as string | undefined;
 
   return (
-    <div className="flex flex-col gap-6 px-4 md:px-8 py-6 max-w-screen-2xl mx-auto pb-16">
-      {/* Breadcrumbs */}
-      <Breadcrumbs
-        items={[
-          { label: 'Anime', to: '/anime' },
-          { label: displayTitle, to: backToDetailUrl },
-          { label: `Episode ${episodeData.episode}` },
-        ]}
-      />
-      
-      {/* Top Grid: Player (Left) + Server Selection (Right) */}
+    <div className="pb-16 relative">
+      {/* Background Banner */}
+      <div className="absolute top-0 left-0 right-0 h-[40vh] md:h-[50vh] w-full pointer-events-none z-0">
+        <div className="absolute inset-0 bg-linear-to-t from-[#070a10] via-[#070a10]/80 to-transparent z-10" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#070a10] via-[#070a10]/40 to-transparent z-10" />
+        {anime?.cover && (
+          <Image
+            src={anime.cover as string}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover opacity-30 blur-[2px]"
+          />
+        )}
+      </div>
+
+      <div className="relative z-10 flex flex-col gap-6 px-4 md:px-8 py-6 max-w-[1920px] mx-auto">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          items={[
+            { label: 'Anime', to: '/anime' },
+            { label: displayTitle, to: backToDetailUrl },
+            { label: `Episode ${episodeData.episode}` },
+          ]}
+          className="mb-2 backdrop-blur-sm bg-black/20 p-2 rounded-xl inline-flex self-start border border-white/5"
+        />
+        
+        {/* Top Grid: Player (Left) + Server Selection (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         
         {/* Left Column: Player & Info */}
@@ -211,7 +226,7 @@ export default function WatchPage() {
           {downloads.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {downloads.map((dl, i) => (
-                <div key={i} className="bg-[#0b0e14] border border-white/[0.04] rounded-xl p-3.5 hover:border-white/10 transition-colors">
+                <div key={i} className="bg-[#0b0e14]/80 backdrop-blur-sm border border-white/[0.04] rounded-xl p-3.5 hover:border-white/10 transition-colors">
                   <div className="flex items-center justify-between mb-3 pb-2.5 border-b border-white/[0.04]">
                     <span className="font-bold text-[#00a3ff] text-xs uppercase tracking-widest">{dl.quality}</span>
                     <span className="text-xs text-slate-500 font-medium px-2 py-0.5 bg-white/5 rounded-md">{dl.size}</span>
@@ -260,7 +275,7 @@ export default function WatchPage() {
                     className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl transition-all border ${
                       isCurrent 
                         ? 'bg-[#00a3ff]/15 border-[#00a3ff]/50 text-[#00a3ff] shadow-[0_0_12px_rgba(0,163,255,0.1)] pointer-events-none' 
-                        : 'bg-[#0b0e14] border-white/[0.04] text-slate-400 hover:bg-[#1a1f2e] hover:border-white/10 hover:text-slate-200'
+                        : 'bg-[#0b0e14]/80 backdrop-blur-sm border-white/[0.04] text-slate-400 hover:bg-[#1a1f2e] hover:border-white/10 hover:text-slate-200'
                     }`}
                   >
                     <span className="text-base font-bold">{episodeItem.episode}</span>
@@ -272,6 +287,7 @@ export default function WatchPage() {
         )}
       </div>
     </div>
+    </div>
   );
 }
 
@@ -281,8 +297,8 @@ function ServerBtn({ isActive, onClick, label }: { isActive: boolean; onClick: (
       onClick={onClick}
       className={`relative px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border overflow-hidden group ${
         isActive
-          ? 'bg-linear-to-r from-[#00a3ff]/15 to-transparent border-[#00a3ff]/40 text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
-          : 'bg-[#0b0e14] border-white/5 text-slate-400 hover:text-slate-200 hover:bg-[#1a1f2e] hover:border-white/10'
+          ? 'bg-gradient-to-r from-[#00a3ff]/15 to-transparent border-[#00a3ff]/40 text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
+          : 'bg-[#0b0e14]/80 backdrop-blur-sm border-white/5 text-slate-400 hover:text-slate-200 hover:bg-[#1a1f2e] hover:border-white/10'
       }`}
     >
       {isActive && (
