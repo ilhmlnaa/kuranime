@@ -70,7 +70,7 @@ export default function SchedulePage() {
           {scheduleItems.map((anime) => (
             <Link
               key={anime.id}
-              to={`/anime/${anime.id}`}
+              to={anime.slug ? `/anime/${anime.id}/${anime.slug}` : `/anime/${anime.id}`}
               className="flex items-center gap-4 bg-[#121620] hover:bg-[#1e2635] border border-white/10 rounded-2xl p-3.5 transition-colors group"
             >
               <div className="flex-shrink-0 w-14 h-20 md:w-16 md:h-24 rounded-xl overflow-hidden bg-[#0b0e14] border border-white/10">

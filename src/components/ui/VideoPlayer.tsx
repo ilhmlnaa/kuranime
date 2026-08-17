@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Loader2, Server } from 'lucide-react';
 import { KuramaDrivePlyr } from './KuramaDrivePlyr';
 import { getProxiedVideoSource } from '../../utils/proxy';
@@ -11,6 +11,7 @@ export interface VideoPlayerProps {
   activeServerId?: string;
   isLoading?: boolean;
   onEnded?: () => void;
+  overlay?: ReactNode;
   className?: string;
 }
 
@@ -22,6 +23,7 @@ export function VideoPlayer({
   activeServerId,
   isLoading = false,
   onEnded,
+  overlay,
   className = '',
 }: VideoPlayerProps) {
   const [loadedIframeUrl, setLoadedIframeUrl] = useState<string>();
@@ -120,6 +122,7 @@ export function VideoPlayer({
             />
           </>
         ) : null}
+        {overlay ? <div className="absolute inset-0 z-30">{overlay}</div> : null}
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-white/[0.05] bg-[#0d1117] px-4 py-2">

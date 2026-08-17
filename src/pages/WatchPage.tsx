@@ -1,6 +1,6 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, List, Radio, Download, ExternalLink } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, ChevronRight, List, Radio, Download, ExternalLink, SkipForward } from 'lucide-react';
 import { useAnimeDetail, useEpisode, useStream } from '../hooks/useAnime';
 import { useHistoryStore } from '../store/useHistoryStore';
 import { VideoPlayer } from '../components/ui/VideoPlayer';
@@ -28,7 +28,12 @@ function cleanEpisodeTitle(rawTitle: string): string {
 
 export default function WatchPage() {
   const { id, ep } = useParams<{ id: string; ep: string }>();
+  const navigate = useNavigate();
   const [selectedServer, setSelectedServer] = useState<string | null>(null);
+  const [autoNextEnabled, setAutoNextEnabled] = useState(true);
+  const [showNextOverlay, setShowNextOverlay] = useState(false);
+  const [countdown, setCountdown] = useState(8);
+  const [nextEpisodeTarget, setNextEpisodeTarget] = useState<{ url: string; context: string }>();
 
   const { data: episodeData, isLoading: isEpLoading, error } = useEpisode(id, ep);
   const episodeSlug = episodeData?.slug;
@@ -52,6 +57,23 @@ export default function WatchPage() {
   );
 
   const addHistory = useHistoryStore((s) => s.add);
+
+  const playbackContext = `${ep ?? ''}:${activeServer ?? ''}`;
+
+  useEffect(() => {
+    if (!showNextOverlay || !nextEpisodeTarget || nextEpisodeTarget.context !== playbackContext) return;
+
+    if (countdown <= 0) {
+      navigate(nextEpisodeTarget.url);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setCountdown((current) => current - 1);
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [countdown, navigate, nextEpisodeTarget, playbackContext, showNextOverlay]);
 
   // Save immediately from episode data, then enrich the same entry when detail arrives.
   useEffect(() => {
@@ -96,6 +118,26 @@ export default function WatchPage() {
 
   const videoUrl = activeServer === 'kuramadrive' && defaultStreamUrl ? defaultStreamUrl : streamData?.videoUrl as string | undefined;
   const iframeUrl = streamData?.iframeUrl as string | undefined;
+  const nextEpisodeUrl = nextEpNum ? `/anime/${id}/episode/${nextEpNum}` : undefined;
+  const canAutoNext = isKuramaDrive && Boolean(nextEpisodeUrl);
+  const isNextOverlayVisible = showNextOverlay && nextEpisodeTarget?.context === playbackContext;
+
+  const cancelAutoNext = () => {
+    setShowNextOverlay(false);
+    setCountdown(8);
+    setNextEpisodeTarget(undefined);
+  };
+
+  const handleVideoEnded = () => {
+    if (!autoNextEnabled || !canAutoNext || !nextEpisodeUrl) return;
+    setCountdown(8);
+    setNextEpisodeTarget({ url: nextEpisodeUrl, context: playbackContext });
+    setShowNextOverlay(true);
+  };
+
+  const continueToNextEpisode = () => {
+    if (nextEpisodeTarget?.context === playbackContext) navigate(nextEpisodeTarget.url);
+  };
 
   return (
     <div className="pb-16 relative">
@@ -123,6 +165,49 @@ export default function WatchPage() {
             poster={anime?.cover as string | undefined}
             activeServerId={activeServer}
             isLoading={isStreamLoading}
+            onEnded={handleVideoEnded}
+            overlay={isNextOverlayVisible ? (
+              <div className="flex h-full w-full items-center justify-center bg-black/85 p-4 backdrop-blur-sm sm:p-6">
+                <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111620] p-5 shadow-[0_24px_64px_rgba(0,0,0,0.55)] sm:p-6">
+                  <div className="flex items-start gap-3.5">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00a3ff]/12 text-[#38bdf8]">
+                      <CheckCircle2 className="h-6 w-6" />
+                    </div>
+                    <div className="min-w-0">
+                      <h2 className="text-lg font-bold text-white sm:text-xl">Episode selesai</h2>
+                      <p className="mt-1 text-sm leading-6 text-slate-400">
+                        Melanjutkan ke Episode {nextEpNum} dalam <span className="font-bold text-white">{countdown} detik</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
+                    <div
+                      className="h-full rounded-full bg-[#00a3ff] transition-[width] duration-1000 ease-linear"
+                      style={{ width: `${Math.max(0, countdown / 8) * 100}%` }}
+                    />
+                  </div>
+
+                  <div className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={continueToNextEpisode}
+                      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#00a3ff] px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0091e6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#38bdf8]"
+                    >
+                      <SkipForward className="h-4 w-4" />
+                      Lanjut sekarang
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelAutoNext}
+                      className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : undefined}
           />
 
           {/* Episode Info & Navigation */}
@@ -156,10 +241,28 @@ export default function WatchPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex shrink-0 items-center gap-2">
               <NavBtn to={prevEpNum ? `/anime/${id}/episode/${prevEpNum}` : undefined} label="Episode Sebelumnya" icon={<ChevronLeft className="w-5 h-5" />} text="Prev" />
-              <NavBtn to={backToDetailUrl} label="Daftar Episode" icon={<List className="w-5 h-5" />} />
-              <NavBtn to={nextEpNum ? `/anime/${id}/episode/${nextEpNum}` : undefined} label="Episode Selanjutnya" icon={<ChevronRight className="w-5 h-5" />} text="Next" reverse />
+              <label
+                className={`flex min-h-11 items-center gap-2 rounded-xl border px-3 transition-colors sm:px-4 ${
+                  canAutoNext
+                    ? 'cursor-pointer border-white/10 bg-[#0b0e14] text-slate-200 hover:border-white/20'
+                    : 'cursor-not-allowed border-white/5 bg-[#0b0e14]/50 text-slate-600'
+                }`}
+                title={canAutoNext ? 'Lanjut otomatis setelah video selesai' : 'Hanya tersedia di server Kuranime dan jika ada episode berikutnya'}
+              >
+                <SkipForward className="h-4 w-4 shrink-0" />
+                <span className="hidden text-xs font-bold uppercase tracking-wider sm:block">Auto Next</span>
+                <input
+                  type="checkbox"
+                  checked={autoNextEnabled}
+                  disabled={!canAutoNext}
+                  onChange={(event) => setAutoNextEnabled(event.target.checked)}
+                  className="peer sr-only"
+                />
+                <span className="relative h-5 w-9 shrink-0 rounded-full bg-slate-700 transition-colors peer-checked:bg-[#00a3ff] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#38bdf8] peer-disabled:opacity-40 after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-4" aria-hidden="true" />
+              </label>
+              <NavBtn to={nextEpisodeUrl} label="Episode Selanjutnya" icon={<ChevronRight className="w-5 h-5" />} text="Next" reverse />
             </div>
           </div>
         </div>
@@ -172,7 +275,7 @@ export default function WatchPage() {
               <h3 className="text-sm font-semibold tracking-wide text-slate-200">Server Streaming</h3>
             </div>
             {servers.length > 0 || defaultStreamUrl ? (
-              <div className="custom-scrollbar flex max-h-[400px] flex-col gap-2.5 overflow-y-auto pr-2">
+              <div className="custom-scrollbar grid max-h-100 grid-cols-2 gap-2.5 overflow-y-auto pr-2 sm:grid-cols-3 lg:grid-cols-2">
                 {defaultStreamUrl && !servers.some(s => s.id === 'kuramadrive') && (
                   <ServerBtn
                     isActive={activeServer === 'kuramadrive'}
@@ -288,16 +391,17 @@ function ServerBtn({ isActive, onClick, label }: { isActive: boolean; onClick: (
   return (
     <button
       onClick={onClick}
-      className={`relative px-4 py-3 rounded-xl text-left text-sm font-medium transition-all border overflow-hidden group ${
+      title={label}
+      className={`group relative flex items-center overflow-hidden rounded-xl border px-3 py-2.5 text-left text-sm font-medium transition-all ${
         isActive
-          ? 'bg-gradient-to-r from-[#00a3ff]/15 to-transparent border-[#00a3ff]/40 text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
-          : 'bg-[#0b0e14]/80 backdrop-blur-sm border-white/5 text-slate-400 hover:text-slate-200 hover:bg-[#1a1f2e] hover:border-white/10'
+          ? 'border-[#00a3ff]/40 bg-linear-to-r from-[#00a3ff]/15 to-transparent text-[#00a3ff] shadow-[0_0_16px_rgba(0,163,255,0.15)]'
+          : 'border-white/5 bg-[#0b0e14]/80 text-slate-400 backdrop-blur-sm hover:border-white/10 hover:bg-[#1a1f2e] hover:text-slate-200'
       }`}
     >
       {isActive && (
-        <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#00a3ff] shadow-[0_0_8px_rgba(0,163,255,0.8)]" />
+        <span className="absolute bottom-0 left-0 top-0 w-1 bg-[#00a3ff] shadow-[0_0_8px_rgba(0,163,255,0.8)]" />
       )}
-      <span className={isActive ? 'pl-1' : ''}>{label}</span>
+      <span className={`min-w-0 truncate ${isActive ? 'pl-1.5' : ''}`}>{label}</span>
     </button>
   );
 }

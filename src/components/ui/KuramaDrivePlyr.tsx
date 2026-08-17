@@ -74,16 +74,18 @@ declare global {
 
 const PLYR_CONFIG = {
   controls: [
-    'play-large', 'play', 'progress', 'current-time', 'duration',
+    'play-large', 'restart', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'duration',
     'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen',
   ],
   settings: ['speed', 'quality'],
+  seekTime: 10,
   speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
   tooltips: { controls: true, seek: true },
   keyboard: { focused: true, global: false },
   i18n: {
     play: 'Putar', pause: 'Jeda', mute: 'Bisukan', unmute: 'Nyalakan suara',
     settings: 'Pengaturan', fullscreen: 'Layar penuh', exitFullscreen: 'Keluar layar penuh',
+    rewind: 'Mundur {seektime} detik', fastForward: 'Maju {seektime} detik',
     speed: 'Kecepatan', normal: 'Normal',
   },
 };
@@ -91,9 +93,14 @@ const PLYR_CONFIG = {
 export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster, onEnded }: KuramaDrivePlyrProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<unknown>(null);
+  const onEndedRef = useRef(onEnded);
   const [libsReady, setLibsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    onEndedRef.current = onEnded;
+  }, [onEnded]);
 
   // Load CDN scripts once
   useEffect(() => {
@@ -154,14 +161,14 @@ export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster,
       });
 
       const plyr = new PlyrClass(video, PLYR_CONFIG);
-      if (onEnded) plyr.on('ended', onEnded);
+      plyr.on('ended', () => onEndedRef.current?.());
       plyr.on('error', () => { setHasError(true); setErrorMsg('Gagal memutar video.'); });
       playerRef.current = { destroy: () => { plyr.destroy(); hls.destroy(); } };
     } else {
       // Direct MP4 or native HLS (Safari)
       video.src = videoUrl;
       const plyr = new PlyrClass(video, PLYR_CONFIG);
-      if (onEnded) plyr.on('ended', onEnded);
+      plyr.on('ended', () => onEndedRef.current?.());
       plyr.on('error', () => { setHasError(true); setErrorMsg('Gagal memutar video.'); });
       playerRef.current = { destroy: () => { plyr.destroy(); } };
     }
@@ -176,7 +183,7 @@ export function KuramaDrivePlyr({ videoUrl, streamType = 'video', title, poster,
       // Clear only after Plyr has restored/destroyed its own DOM wrappers.
       if (container) container.replaceChildren();
     };
-  }, [libsReady, videoUrl, streamType, title, poster, onEnded]);
+  }, [libsReady, videoUrl, streamType, title, poster]);
 
   if (hasError) {
     return (

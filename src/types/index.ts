@@ -113,6 +113,7 @@ export interface ScheduleItem extends FlexibleRecord {
   img: string
   url?: string
   id: string
+  slug?: string
 }
 
 export interface ScheduleDay extends FlexibleRecord {
